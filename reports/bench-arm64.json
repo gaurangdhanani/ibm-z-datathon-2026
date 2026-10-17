@@ -1,0 +1,76 @@
+{
+ "label": "Laptop (arm64)",
+ "machine": "arm64",
+ "system": "Darwin",
+ "release": "27.0.0",
+ "python": "3.13.12",
+ "hostname": "Gaurangs-MacBook-Air.local",
+ "cpus": 10,
+ "openssl": "OpenSSL 3.0.18 30 Sep 2025",
+ "cryptography": "50.0.2",
+ "ran_at": "2026-10-17T21:31:33+00:00",
+ "quick": false,
+ "results": {
+  "aes_gcm_encrypt": {
+   "title": "AES-256-GCM encrypt, 1 MiB",
+   "unit": "MB/s",
+   "better": "higher",
+   "value": 8877.408,
+   "iterations": 50,
+   "p50_ms": 0.113,
+   "p95_ms": 0.12,
+   "payload_bytes": 1048576
+  },
+  "aes_gcm_decrypt": {
+   "title": "AES-256-GCM decrypt, 1 MiB",
+   "unit": "MB/s",
+   "better": "higher",
+   "value": 8589.885,
+   "iterations": 50,
+   "p50_ms": 0.116,
+   "p95_ms": 0.117,
+   "payload_bytes": 1048576
+  },
+  "record_encrypt": {
+   "title": "Encrypt one 64 KiB record",
+   "unit": "ms",
+   "better": "lower",
+   "value": 0.022,
+   "iterations": 200,
+   "p50_ms": 0.022,
+   "p95_ms": 0.022,
+   "payload_bytes": 65536
+  },
+  "broker_read": {
+   "title": "Hospital reads one record (broker)",
+   "unit": "ms",
+   "better": "lower",
+   "value": 0.585,
+   "iterations": 200,
+   "p50_ms": 0.585,
+   "p95_ms": 0.782,
+   "payload_bytes": 65536
+  },
+  "key_swap": {
+   "title": "Key swap, 29 records re-encrypted",
+   "unit": "ms",
+   "better": "lower",
+   "value": 2.917,
+   "iterations": 10,
+   "p50_ms": 2.917,
+   "p95_ms": 5.81,
+   "records": 29,
+   "per_record_ms": 0.101
+  },
+  "audit_verify": {
+   "title": "Verify a 1000-entry audit chain",
+   "unit": "ms",
+   "better": "lower",
+   "value": 8.811,
+   "iterations": 5,
+   "p50_ms": 8.811,
+   "p95_ms": 9.192,
+   "entries": 1000
+  }
+ }
+}

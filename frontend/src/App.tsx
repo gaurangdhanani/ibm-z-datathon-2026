@@ -6,6 +6,8 @@ import { AuthProvider } from "./lib/auth";
 import { Forbidden, HomeRedirect, NotFound } from "./pages/Home";
 import LoginPage from "./pages/LoginPage";
 import DemoControlPage from "./pages/admin/DemoControlPage";
+import FeedPage from "./pages/admin/FeedPage";
+import MetricsPage from "./pages/admin/MetricsPage";
 import PatientRecordsPage from "./pages/hospital/PatientRecordsPage";
 import PatientsPage from "./pages/hospital/PatientsPage";
 import RequestsPage from "./pages/hospital/RequestsPage";
@@ -61,6 +63,8 @@ export default function App() {
             }
           >
             <Route index element={<DemoControlPage />} />
+            <Route path="feed" element={<FeedPage />} />
+            <Route path="metrics" element={<MetricsPage />} />
           </Route>
 
           <Route path="/forbidden" element={<Forbidden />} />

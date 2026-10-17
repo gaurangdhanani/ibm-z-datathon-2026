@@ -12,7 +12,11 @@ const NAV: Record<Exclude<Role, "patient">, Array<{ to: string; label: string; e
     { to: "/hospital", label: "My patients", end: true },
     { to: "/hospital/requests", label: "Access requests" },
   ],
-  admin: [{ to: "/admin", label: "Demo control", end: true }],
+  admin: [
+    { to: "/admin", label: "Demo control", end: true },
+    { to: "/admin/feed", label: "Live feed" },
+    { to: "/admin/metrics", label: "Dashboard" },
+  ],
 };
 
 /** Route wrapper: redirects anonymous users to /login and wrong roles to /forbidden. */
@@ -35,7 +39,10 @@ export function RequireRole({ roles, children }: { roles: Role[]; children: Reac
 export function AppShell() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  useLiveEvents(user?.role === "staff" ? "/api/hospital/events" : null); // VLT-9
+  // VLT-9: staff hear about their own access; demo control hears everything (S1 live feed).
+  useLiveEvents(
+    user?.role === "staff" ? "/api/hospital/events" : user?.role === "admin" ? "/api/admin/events" : null,
+  );
   if (!user || user.role === "patient") return null;
 
   const subtitle =

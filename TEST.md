@@ -24,7 +24,7 @@ make lint
 cd frontend && npm run typecheck
 ```
 
-Expected: `34 passed`, `All checks passed!`, and no TypeScript errors.
+Expected: `38 passed`, `All checks passed!`, and no TypeScript errors.
 
 ```bash
 make eval
@@ -76,6 +76,14 @@ Use two devices (or two browsers; one browser shares one sign-in): Maya on a pho
 8. **Organizer (ORG-2, P4).** As Maya upload a `.txt` whose text mentions a knee MRI and "Dr. Lina Park": it lands under **Knee** (Body part) and **Dr. Lina Park** (Doctor) immediately with the tags shown. Upload a note mentioning a therapy session: it gets the **Sensitive** badge, and firing the clerk at it (or opening it as Jordan Price) freezes the key.
 9. **Reset (S6).** Demo control → **Reset demo** → confirm. Every device stays signed in; Maya is back at Northside with Riverbend's request pending and one open alert.
 
+## 3d. Phase 4: live feed, dashboard, tamper test
+
+Sign in as **Demo Control** on the laptop; keep Maya on the phone.
+
+1. **Live feed (S1).** Open the **Live feed** tab. Sam Lee's seeded late-night entry is listed as "Sam Lee on Maya Chen's vault" with its reason. Fire **Billing clerk opens a psychiatry note** from Demo control in another tab (or open Maya's psychiatry note as Jordan Price): the "Jordan Price … Blocked and frozen · High" line appears at the top with a **New** badge, no reload. **Everything** lists every logged action across all three patients.
+2. **Dashboard (S2, S4).** Open **Dashboard**. Record organizer: 120 records, mean field accuracy 99.8 %, sensitive-record recall 100 %, precision 100 %, one miss (Annual physical read as Vaccination). Laptop vs LinuxONE: one bar per machine for six metrics, **this server** on the machine you are on. With only `reports/bench-arm64.json` committed there is a single bar per metric; after the VM's `make bench`, copy `reports/bench-s390x.json` in and reload to see both and the "× faster" note.
+3. **Tamper test (S3).** Demo control, bottom card: **Chain intact · N entries**. Put Maya's phone on **History** (badge "History verified"). Click **Tamper with the log**: the badge turns red, **Chain broken at entry #k**, the card shows the struck-out original "Opened Knee MRI report · allowed · low" and the forged "Viewed record list · allowed · low", and Maya's History badge turns red at the same entry within a second. **Repair**: both badges are green again. **Reset demo** also clears any tampering.
+
 
 ## 4. API checks with curl (server-side guards)
 
@@ -113,9 +121,9 @@ make smoke
 
 Expected: one line like `- 2026-10-17 20:00 UTC · arm64 · Darwin · Python 3.13.12 · host … · health ok · demo login ok (Maya Chen) · SPA served · 5 requests in 60 ms`. Paste it into `DECISIONS.md` under FND-6.
 
-## 6. LinuxONE (FND-6, s390x)
+## 6. LinuxONE (FND-6, FND-7, FND-8, s390x)
 
-Node is not installed on the VM; build the frontend here and copy it over.
+First time? Follow [LINUXONE.md](LINUXONE.md): account, virtual server, SSH key, then these steps. Node is not installed on the VM; build the frontend here and copy it over.
 
 1. On the laptop: `make build`, then copy the repo without the heavy folders:
 
@@ -127,6 +135,8 @@ Node is not installed on the VM; build the frontend here and copy it over.
 3. Start the server: `make run`. In a second SSH session: `make smoke`. The line must say `s390x`.
 4. From a phone or laptop on a network that reaches the VM, open `http://LINUXONE_HOST:8000` and repeat step 3.1 and 3.4.
 5. Paste the smoke line into `DECISIONS.md` under FND-6 and tick FND-6 in `TICKETS.md`.
+6. **Benchmark (FND-7).** On the VM `make bench` writes `reports/bench-s390x.json`; on the laptop `make bench` writes `reports/bench-arm64.json`. `scp` the VM's file into `reports/` and commit both; **Demo Control → Dashboard** shows them side by side.
+7. **HTTPS (FND-8).** Stop `make run`, then on the VM `scripts/linuxone_https.sh`. It prints `https://148-100-x-y.sslip.io`; open it on a phone, sign in as Maya, and repeat 3c steps 2 and 3 with Demo Control on the laptop. Logs: `sudo journalctl -u medvault -f` and `sudo journalctl -u caddy -f`.
 
 If `linuxone_setup.sh` fails on `cryptography`, run `sudo apt-get install python3-cryptography` and re-run the script; it skips the pip build on s390x on purpose.
 

@@ -19,18 +19,18 @@ Single-process demo (what LinuxONE runs):
 make serve      # builds frontend/dist, then FastAPI serves app + API on 0.0.0.0:8000
 ```
 
-Other targets: `make test`, `make lint`, `make eval` (score the organizer into `reports/`), `make seed` (wipe and reload demo data), `make run` (serve without building), `make smoke` (health + demo login record line), `make help`.
+Other targets: `make test`, `make lint`, `make eval` (score the organizer into `reports/`), `make bench` (time encryption, key swap and reads into `reports/bench-<machine>.json`), `make seed` (wipe and reload demo data), `make run` (serve without building), `make smoke` (health + demo login record line), `make help`.
 
-Testing steps, including the LinuxONE (s390x) procedure, are in [TEST.md](TEST.md).
+Testing steps are in [TEST.md](TEST.md). First time on LinuxONE? [LINUXONE.md](LINUXONE.md) walks through the account, the virtual server, the SSH key, the benchmark and serving the demo over HTTPS.
 
 ## Layout
 
 | Path | What |
 | --- | --- |
-| `medvault/` | FastAPI backend: `config.py`, `db.py`, `models.py`, `auth.py`, `seed.py`, `main.py`; `kms.py` (envelope encryption), `audit.py` (hash chain), `broker.py` (the one read path), `rules.py` (fixed access rules), `events.py` (SSE streams), `patient.py`, `hospital.py` and `admin.py` (routes), `schemas.py` (API shapes); the organizer: `vocab.py` (word lists, note templates), `organizer.py` (text extraction, tagger, group-by), `organizer_eval.py` (synthetic set + evaluation) |
+| `medvault/` | FastAPI backend: `config.py`, `db.py`, `models.py`, `auth.py`, `seed.py`, `main.py`; `kms.py` (envelope encryption), `audit.py` (hash chain), `broker.py` (the one read path), `rules.py` (fixed access rules), `events.py` (SSE streams), `patient.py`, `hospital.py` and `admin.py` (routes), `schemas.py` (API shapes); the organizer: `vocab.py` (word lists, note templates), `organizer.py` (text extraction, tagger, group-by), `organizer_eval.py` (synthetic set + evaluation); `bench.py` (laptop-vs-LinuxONE benchmark) |
 | `tests/` | pytest suite (in-memory SQLite) |
-| `reports/` | `synthetic_records.json` (DATA-1) and `eval.json` (ORG-5), from `make eval` |
-| `scripts/` | `linuxone_setup.sh` (s390x VM setup) and `smoke.sh` (health + login record) |
+| `reports/` | `synthetic_records.json` (DATA-1) and `eval.json` (ORG-5) from `make eval`; `bench-<machine>.json` from `make bench` (FND-7) |
+| `scripts/` | `linuxone_setup.sh` (s390x VM setup), `linuxone_https.sh` (Caddy + Let's Encrypt + systemd, FND-8) and `smoke.sh` (health + login record) |
 | `frontend/` | Vite + React + Tailwind SPA; `src/components/ui.tsx` is the shared UI kit |
 | `data/` | SQLite database (gitignored) |
 | `TICKETS.md` | the build checklist · `DECISIONS.md` the decision log |
@@ -43,4 +43,4 @@ Copy `.env.example` to `.env` to override anything. Defaults are dev-safe. Set `
 
 Interactive docs at `/api/docs` (dev only). Health at `/api/health` reports the machine architecture, which is how the s390x smoke test proves where it ran.
 
-Routes: `/api/auth/*` (login, sessions), `/api/patient/*` (vault, records, upload, grant, transfer, requests, access-log, alerts and decisions, emergency end, `events` stream), `/api/hospital/*` (patients, record read, patient-lookup, request-access, requests, `emergency` break-glass, `events` stream), `/api/hospitals`, `/api/audit/verify`, `/api/admin/*` (scenarios, reset; demo control only). Every record read goes through the broker, is judged by the access rules and lands in the hash-chained access log; denials return `{"detail": {"code", "message"}}` with `no_grant`, `access_frozen` or `access_revoked`. The `events` routes are Server-Sent Events: the app refetches on every `change`.
+Routes: `/api/auth/*` (login, sessions), `/api/patient/*` (vault, records, upload, grant, transfer, requests, access-log, alerts and decisions, emergency end, `events` stream), `/api/hospital/*` (patients, record read, patient-lookup, request-access, requests, `emergency` break-glass, `events` stream), `/api/hospitals`, `/api/audit/verify`, `/api/admin/*` (scenarios, reset, live `feed` and `events`, `tamper` test, dashboard `reports`; demo control only). Every record read goes through the broker, is judged by the access rules and lands in the hash-chained access log; denials return `{"detail": {"code", "message"}}` with `no_grant`, `access_frozen` or `access_revoked`. The `events` routes are Server-Sent Events: the app refetches on every `change`.

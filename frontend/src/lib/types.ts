@@ -225,10 +225,82 @@ export interface ScenarioResult {
   reasons: Reason[];
 }
 
+/** S1 live feed: an access-log line plus whose vault it concerns. */
+export interface FeedEntry extends AccessEntry {
+  patient: string;
+}
+export type FeedFilter = "flagged" | "all";
+
+/** S3 tamper test: what the demo rewrote in the log, and what the chain check says now. */
+export interface TamperChange {
+  entry_id: number;
+  patient: string;
+  before: string;
+  after: string;
+}
+export interface TamperState {
+  verify: AuditVerify;
+  changes: TamperChange[];
+}
+
+/** S2: reports/eval.json from `make eval` (medvault/organizer_eval.py). */
+export interface EvalReport {
+  records: number;
+  tagger: string;
+  accuracy: Record<string, number>;
+  mean_accuracy: number;
+  sensitive_records: { tp: number; fp: number; fn: number; tn: number; recall: number; precision: number };
+  misses: Array<{
+    id: number;
+    title: string;
+    wrong: Record<string, { got: string | null; want: string | null }>;
+    sensitivity: { got: number; want: number };
+  }>;
+}
+
+/** S4: reports/bench-<machine>.json from `make bench` (medvault/bench.py), one per machine. */
+export interface BenchResult {
+  title: string;
+  unit: "MB/s" | "ms";
+  better: "higher" | "lower";
+  value: number;
+  iterations: number;
+  p50_ms: number;
+  p95_ms: number;
+  payload_bytes?: number;
+  records?: number;
+  per_record_ms?: number;
+  entries?: number;
+}
+export interface BenchReport {
+  label: string;
+  machine: string;
+  system: string;
+  release: string;
+  python: string;
+  hostname: string;
+  cpus: number | null;
+  openssl: string;
+  cryptography: string;
+  ran_at: string;
+  quick: boolean;
+  results: Record<string, BenchResult>;
+}
+export interface Reports {
+  this_machine: string;
+  eval: EvalReport | null;
+  benchmarks: BenchReport[];
+}
+
 export interface AdminApi {
   getScenarios(): Promise<Scenario[]>;
   runScenario(id: string): Promise<ScenarioResult>;
   reset(): Promise<{ ok: boolean }>;
+  getFeed(filter: FeedFilter): Promise<FeedEntry[]>;
+  getTamper(): Promise<TamperState>;
+  tamper(): Promise<TamperState>;
+  repair(): Promise<TamperState>;
+  getReports(): Promise<Reports>;
 }
 
 export const GROUP_BY_OPTIONS: Array<{ value: GroupBy; label: string }> = [

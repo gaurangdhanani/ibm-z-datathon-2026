@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+# FND-8: serve the live demo from the LinuxONE VM over HTTPS, as two systemd services:
+#   medvault   uvicorn on 127.0.0.1:8000 (API + frontend/dist), restarts on failure, starts on boot
+#   caddy      reverse proxy on :80 and :443 with an automatic Let's Encrypt certificate
+#
+# Run ON THE VM, from the repo root, after scripts/linuxone_setup.sh and with frontend/dist present:
+#   scripts/linuxone_https.sh [hostname]
+# Without a hostname it uses <public-ip-with-dashes>.sslip.io, a free DNS name that resolves to the
+# IP, so no domain is needed. Ports 80 and 443 must be reachable from the internet (Let's Encrypt
+# checks port 80). Re-running is safe: it rewrites the config and restarts both services.
+set -euo pipefail
+REPO=$(cd "$(dirname "$0")/.." && pwd)
+cd "$REPO"
+RUN_AS=${USER:-$(id -un)}
+
+IP=$(curl -fsS --max-time 5 https://api.ipify.org || hostname -I | awk '{print $1}')
+DOMAIN=${1:-${IP//./-}.sslip.io}
+case "$(uname -m)" in
+  s390x) ARCH=s390x ;;
+  x86_64) ARCH=amd64 ;;
+  aarch64 | arm64) ARCH=arm64 ;;
+  *) echo "unsupported architecture $(uname -m)"; exit 1 ;;
+esac
+echo "== $REPO -> https://$DOMAIN  ($ARCH, public IP $IP)"
+[ -f frontend/dist/index.html ] || { echo "frontend/dist is missing: run 'make build' on the laptop and rsync again"; exit 1; }
+[ -x .venv/bin/uvicorn ] || { echo ".venv is missing: run scripts/linuxone_setup.sh first"; exit 1; }
+
+# 1. Production settings: Secure cookies, no CORS, no /api/docs; the demo personas stay on.
+#    A fresh secret re-derives the KMS master key, so the demo data is re-seeded under it.
+if ! grep -qs '^MEDVAULT_SECRET_KEY=' .env; then
+  {
+    echo "MEDVAULT_ENV=prod"
+    echo "MEDVAULT_DEMO_MODE=true"
+    echo "MEDVAULT_SECRET_KEY=$(python3 -c 'import secrets; print(secrets.token_urlsafe(48))')"
+  } >> .env
+  .venv/bin/python -m medvault.seed
+fi
+
+# 2. Caddy: one static binary from the official download API (built for s390x as well).
+if ! command -v caddy >/dev/null; then
+  curl -fsSL "https://caddyserver.com/api/download?os=linux&arch=$ARCH" -o /tmp/caddy
+  sudo install -m 755 /tmp/caddy /usr/local/bin/caddy
+fi
+id caddy >/dev/null 2>&1 || sudo useradd --system --home /var/lib/caddy --create-home --shell /usr/sbin/nologin caddy
+sudo mkdir -p /etc/caddy
+sudo tee /etc/caddy/Caddyfile >/dev/null <<EOF
+$DOMAIN {
+	encode gzip
+	reverse_proxy 127.0.0.1:8000 {
+		flush_interval -1
+	}
+}
+EOF
+
+# 3. systemd units
+sudo tee /etc/systemd/system/medvault.service >/dev/null <<EOF
+[Unit]
+Description=MedVault (FastAPI + built frontend)
+After=network-online.target
+
+[Service]
+User=$RUN_AS
+WorkingDirectory=$REPO
+ExecStart=$REPO/.venv/bin/uvicorn medvault.main:app --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips=127.0.0.1
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo tee /etc/systemd/system/caddy.service >/dev/null <<'EOF'
+[Unit]
+Description=Caddy (HTTPS reverse proxy for MedVault)
+After=network-online.target
+
+[Service]
+User=caddy
+Group=caddy
+ExecStart=/usr/local/bin/caddy run --environ --config /etc/caddy/Caddyfile
+ExecReload=/usr/local/bin/caddy reload --config /etc/caddy/Caddyfile --force
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+if command -v ufw >/dev/null && sudo ufw status 2>/dev/null | grep -q '^Status: active'; then
+  sudo ufw allow 80/tcp && sudo ufw allow 443/tcp
+fi
+sudo systemctl daemon-reload
+sudo systemctl enable medvault caddy >/dev/null
+sudo systemctl restart medvault caddy
+
+echo "== waiting for the certificate (Let's Encrypt, usually under a minute)"
+for _ in $(seq 1 45); do
+  if curl -fsS --max-time 5 "https://$DOMAIN/api/health" >/dev/null 2>&1; then
+    echo
+    echo "Live: https://$DOMAIN   (open it on your phone; every demo password is medvault-demo)"
+    curl -fsS "https://$DOMAIN/api/health"
+    echo
+    exit 0
+  fi
+  sleep 2
+done
+echo "Not reachable yet. Look at:  sudo journalctl -u caddy -n 50    and    sudo journalctl -u medvault -n 50"
+echo "If ports 80/443 are blocked, add 'tls internal' inside the site block of /etc/caddy/Caddyfile and restart caddy."
+exit 1

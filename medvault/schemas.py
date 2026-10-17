@@ -245,3 +245,30 @@ def grant_info(session: Session, g: Grant) -> GrantInfo:
         frozen_at=g.frozen_at,
         ended_at=g.ended_at,
     )
+
+
+# ---- Phase 4: live feed (S1) and tamper test (S3) --------------------------------------------
+
+
+class FeedEntry(AccessEntry):
+    """One line of the admin's live feed: an access-log entry plus whose vault it concerns."""
+
+    patient: str
+
+
+class AuditVerify(BaseModel):
+    valid: bool
+    entries: int
+    first_broken_entry: int | None
+
+
+class TamperChange(BaseModel):
+    entry_id: int
+    patient: str
+    before: str
+    after: str
+
+
+class TamperState(BaseModel):
+    verify: AuditVerify
+    changes: list[TamperChange]

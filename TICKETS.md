@@ -80,10 +80,12 @@ Phase 3.5 verified Sat night: a new knee MRI note is tagged and listed under Kne
 
 - [ ] **FND-7** Benchmark script: laptop vs LinuxONE (encryption, key swap, read latency) · LinuxONE owner + Eng 1 · needs VLT-1, VLT-3, VLT-6
 - [ ] **FND-8** Serve the live demo from LinuxONE over HTTPS · LinuxONE owner · needs FND-6, VLT-9
-- [ ] **S1** Live alert feed · Eng 2 · needs VLT-9, RUL-1, FND-5
-- [ ] **S2** Tagging metrics dashboard (organizer accuracy, sensitive-record recall) · Eng 2 · needs ORG-5
-- [ ] **S3** Tamper test · Eng 2 + Eng 1 · needs VLT-2
-- [ ] **S4** LinuxONE benchmark panel · Eng 2 · needs FND-7
+- [x] **S1** Live alert feed · Eng 2 · needs VLT-9, RUL-1, FND-5
+- [x] **S2** Tagging metrics dashboard (organizer accuracy, sensitive-record recall) · Eng 2 · needs ORG-5
+- [x] **S3** Tamper test · Eng 2 + Eng 1 · needs VLT-2
+- [x] **S4** LinuxONE benchmark panel · Eng 2 · needs FND-7
+
+Phase 4 built Sat night (see DECISIONS.md "Phase 4"): Demo Control has **Live feed** and **Dashboard** tabs and a **Tamper test** card; `make bench` wrote `reports/bench-arm64.json` (laptop). Still waiting for the VM: the s390x run (`reports/bench-s390x.json`, finishes FND-7) and the HTTPS deployment (`scripts/linuxone_https.sh`, FND-8). The first-time walkthrough is LINUXONE.md.
 
 ## Phase 5 · Hardening & rehearsal (due Sun 08:00 CDT)
 

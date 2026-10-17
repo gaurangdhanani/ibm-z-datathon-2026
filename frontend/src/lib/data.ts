@@ -53,6 +53,11 @@ const liveAdminApi: AdminApi = {
   getScenarios: () => api("/api/admin/scenarios"),
   runScenario: (id) => post(`/api/admin/scenarios/${id}`),
   reset: () => post("/api/admin/reset"),
+  getFeed: (filter) => api(`/api/admin/feed?filter=${filter}`),
+  getTamper: () => api("/api/admin/tamper"),
+  tamper: () => post("/api/admin/tamper"),
+  repair: () => post("/api/admin/tamper/repair"),
+  getReports: () => api("/api/admin/reports"),
 };
 
 /** Wrap the calls that change state so every open screen refetches afterwards. */
@@ -78,7 +83,7 @@ export const patientApi = notifying(livePatientApi, [
   "endEmergency",
 ]);
 export const hospitalApi = notifying(liveHospitalApi, ["requestAccess", "breakGlass"]);
-export const adminApi = notifying(liveAdminApi, ["runScenario", "reset"]);
+export const adminApi = notifying(liveAdminApi, ["runScenario", "reset", "tamper", "repair"]);
 
 export interface Resource<T> {
   data: T | undefined;
