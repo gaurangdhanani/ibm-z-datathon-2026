@@ -1,0 +1,25 @@
+# Runtime dependencies, pinned to what was tested on Python 3.13 (macOS) — see DECISIONS.md FND-1.
+# Everything here is pure Python except pydantic_core, cryptography and cffi, which ship wheels
+# for x86_64/arm64; on s390x (LinuxONE) they may build from source or come from the distro.
+annotated-doc==0.0.5
+annotated-types==0.8.0
+anyio==4.15.1
+cffi==2.1.1
+click==8.5.0
+cryptography==50.0.2
+fastapi==0.143.3
+h11==0.16.0
+idna==3.20
+opentelemetry-api==1.45.1
+pycparser==3.11
+pydantic==2.14.1
+pydantic-settings==2.16.0
+pydantic_core==2.50.1
+python-dotenv==1.2.4
+python-multipart==0.0.32
+SQLAlchemy==2.1.5
+sqlmodel==0.0.48
+starlette==1.8.0
+typing-inspection==0.4.4
+typing_extensions==4.16.0
+uvicorn==0.54.0

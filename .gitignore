@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node / Vite
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Local data and secrets
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+data/blobs/
+.env
+.env.local
+
+# Reports and benchmarks are committed on purpose; scratch output is not
+reports/tmp/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
