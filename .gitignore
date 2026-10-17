@@ -27,3 +27,6 @@ reports/tmp/
 .DS_Store
 .idea/
 .vscode/
+
+# Claude Code app launch config (local dev only)
+.claude/

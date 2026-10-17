@@ -24,7 +24,7 @@ make lint
 cd frontend && npm run typecheck
 ```
 
-Expected: `14 passed`, `All checks passed!`, and no TypeScript errors.
+Expected: `22 passed`, `All checks passed!`, and no TypeScript errors.
 
 ## 3. Manual click-through (dev mode)
 
@@ -34,7 +34,7 @@ make dev
 
 Open http://localhost:5173.
 
-1. **Demo login (P1).** Click **Maya Chen** under Patients. You land on **My vault**: the OneTrace header with her initials (MC), a "Mock data" pill, and four tabs at the bottom: Vault, Keys, History, Alerts.
+1. **Demo login (P1).** Click **Maya Chen** under Patients. You land on **My vault**: the OneTrace header with her initials (MC) and four tabs at the bottom: Vault, Keys, History, Alerts.
 2. **Role guard, client side.** Type http://localhost:5173/hospital in the address bar. You get **Not allowed**. Click **Back to my home** to return to My vault.
 3. **Sign out.** Open the **Alerts** tab, tap the **MC** avatar, then **Sign out**. You are back on the login page. Visit http://localhost:5173/patient directly: it redirects to the login page.
 4. **Staff login (H1).** In **Hospital staff sign-in** enter `elena.vasquez@northside.example` / `medvault-demo`. You land on **My patients** (not back on the patient's Alerts page) with "Physician · Northside General Hospital" in the header and two tabs.
@@ -43,17 +43,20 @@ Open http://localhost:5173.
 7. **Demo control.** Click **Demo Control**. You land on **Demo control**.
 8. **Phone layout.** Shrink the window to phone width (or open the URL on a phone on the same Wi-Fi). Cards stack, nav wraps, nothing scrolls sideways.
 
-## 3b. Phase 2 screens on mock data
+## 3b. Phase 2 screens (live API)
 
-The patient and hospital screens run on mock data (`frontend/src/lib/mock.ts`) until the VLT endpoints exist. The mock lives in the browser's localStorage, so a patient tab and a hospital tab in the same browser see each other's changes after a refresh. **Demo Control → Reset mock data** puts it back to the seed. Use phone width (or a phone) for the patient steps.
+Every patient and hospital screen talks to FastAPI. Start from a fresh seed (`make seed`) so Maya's vault is at Northside with Riverbend's request pending. Use phone width (or a phone) for the patient steps.
 
-1. **Vault (P2, P4).** As Maya: the green card says "Only you and Northside General Hospital hold keys." Tap the chips: **Body part** shows Knee (2 records) and Other / Unknown; **Doctor**, **Condition**, **Type** and **Date** regroup instantly.
-2. **Upload (P3).** **Upload record** → choose a `.txt` file whose text mentions the knee → **Upload**. The record appears under "Just added" with "Organizing inside your vault…", then moves under **Knee** with tags. A renamed binary file (for example a `.exe` renamed to `.pdf`) is rejected with an inline error.
-3. **View (P5).** Open **Knee MRI report**. The text shows with its tags and "Tagged inside your vault". **History** now lists "You · Opened Knee MRI report".
-4. **Key swap (P9, P10).** **Keys** → Riverbend's request → **Approve** → **Move my vault**. The old key breaks at Northside, a new one lands at Riverbend, then "Your vault moved to Riverbend Medical Center". The holder card shows Riverbend · Active · key v2, and Northside is under Previous holders as "Moved away".
-5. **Old hospital blocked (H2, H5).** Sign in as **Dr. Elena Vasquez**. Maya is no longer in **My patients**. Open http://localhost:5173/hospital/patients/1/records/1: the red **Access revoked** panel. Back as Maya, **History → Denied** shows the attempt.
-6. **Access rule freezes (H4, P12).** Reset the mock data, sign in as **Jordan Price** (billing clerk) and open http://localhost:5173/hospital/patients/1/records/3 (psychiatry note): the amber **Access frozen** panel. Any other record of Maya's is now blocked too. As Maya, **Alerts** shows "Unusual access frozen" with the reasons and **Restore access** / **Keep frozen**. Restore asks for confirmation, then Jordan's reads work again (still logged).
-7. **Request access (H6).** As **Dr. Amir Haddad** (Riverbend), **Access requests** → search "Daniel" → pick him → reason → **Request access**. The request shows **Pending**. As Daniel, **Keys** shows it; **Deny**, and Riverbend's list flips to **Denied** within a few seconds.
+1. **Vault (P2, P4).** As Maya: the green card says "Only you and Northside General Hospital hold keys." and "Key v1". Tap the chips: **Body part** shows Knee (2 records) and Other / Unknown; **Doctor**, **Condition**, **Type** and **Date** regroup instantly.
+2. **Upload (P3).** **Upload record** → choose a `.txt` file whose text mentions the knee → **Upload**. The record appears under **Knee** with tags (the organizer runs during the upload). A renamed binary file (for example a `.exe` renamed to `.pdf`) is rejected with "Only PDF, JPG, PNG or TXT files can be uploaded."
+3. **View (P5).** Open **Knee MRI report**. The decrypted text shows with its tags and "Tagged inside your vault". **History** now lists "You · Opened Knee MRI report" and the badge says **History verified**.
+4. **Key swap (P9, P10).** **Keys** → Riverbend's request → **Approve** → **Move my vault**. The old key breaks at Northside, a new one lands at Riverbend, then "Your vault moved to Riverbend Medical Center". The holder card shows Riverbend · Active · key v2; Northside is under Previous holders as "Moved away"; the request shows Approved.
+5. **Old hospital blocked (H2, H5).** Sign in as **Dr. Elena Vasquez**. Maya is no longer in **My patients**. Open http://localhost:5173/hospital/patients/1/records/1: the red **Access revoked** panel. Back as Maya, **History → Denied** shows "Dr. Elena Vasquez · Tried to view record list · access revoked".
+6. **New hospital in (H3).** Sign in as **Dr. Amir Haddad**. Maya is listed with key status Active; **Open records** → **Psychiatry follow-up note** decrypts in the right-hand panel with a **Sensitive** badge. Maya's History shows "Dr. Amir Haddad · Opened Psychiatry follow-up note".
+7. **Request access (H6).** As Dr. Haddad, **Access requests** → search "Daniel" → pick him → a reason of at least 10 characters → **Request access**. The request shows **Pending**. As **Daniel Okafor**, **Keys** shows it; **Deny**, and Riverbend's list flips to **Denied** within a few seconds.
+8. **Tamper check (S3 preview).** With the server running: `sqlite3 data/medvault.db "update access_log set summary='nothing' where id=3"`. Maya's **History** badge turns red: "History tampered at entry #3". `make seed` restores a clean chain.
+
+**Access frozen** (H4) and patient alert decisions (P12) arrive with RUL-1 and VLT-10 in Phase 3.
 
 ## 4. API checks with curl (server-side guards)
 
@@ -114,4 +117,4 @@ If `linuxone_setup.sh` fails on `cryptography`, run `sudo apt-get install python
 make seed
 ```
 
-Drops and reloads every table (hospitals, 8 users, 3 patients, 9 records, grants, one pending access request). Sessions are wiped too, so everyone has to sign in again.
+Drops and reloads every table (hospitals, 8 users, 3 patients, 9 encrypted and tagged records, grants, one pending access request, a valid access-log chain). Sessions are wiped too, so everyone has to sign in again. Also required after changing `MEDVAULT_SECRET_KEY`: the record keys are wrapped under a key derived from it.

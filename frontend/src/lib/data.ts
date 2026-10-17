@@ -1,6 +1,6 @@
 /**
- * The Phase 2+ data layer every screen imports. Mock until the endpoints exist; build with
- * VITE_MOCK_API=false to hit the live FastAPI endpoints (same shapes, see lib/types.ts).
+ * The data layer every screen imports. Live FastAPI endpoints by default (shapes in lib/types.ts);
+ * run or build with VITE_MOCK_API=true to use the browser-side mock (lib/mock.ts) instead.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { DependencyList } from "react";
@@ -10,7 +10,7 @@ import { emitChange, subscribe } from "./bus";
 import { mockHospitalApi, mockPatientApi } from "./mock";
 import type { HospitalApi, PatientApi, RecordContent, RecordSummary } from "./types";
 
-export const USE_MOCK = import.meta.env.VITE_MOCK_API !== "false";
+export const USE_MOCK = import.meta.env.VITE_MOCK_API === "true";
 
 const post = <T>(path: string, body?: unknown) =>
   api<T>(path, { method: "POST", body: body === undefined ? undefined : JSON.stringify(body) });

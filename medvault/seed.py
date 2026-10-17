@@ -1,8 +1,9 @@
 """Demo seed: two hospitals, three patients with records, staff for each hospital, one admin.
 
 ``python -m medvault.seed`` wipes and re-seeds the configured database (S6 demo reset builds on
-this). Every demo account signs in with DEMO_PASSWORD. Record bodies are plaintext placeholders
-until VLT-1/VLT-4 add envelope encryption (``Record.nonce`` is None and key_version is 0).
+this). Every demo account signs in with DEMO_PASSWORD. Records are envelope-encrypted with the
+KMS derived from MEDVAULT_SECRET_KEY (change the secret, re-run the seed), tagged by the
+organizer, and the access log starts with a valid hash chain.
 """
 
 from __future__ import annotations
@@ -11,9 +12,13 @@ from datetime import date, timedelta
 
 from sqlmodel import Session, select
 
+from medvault import audit
 from medvault.config import get_settings
 from medvault.db import drop_db, init_db, make_engine
+from medvault.kms import Kms
 from medvault.models import (
+    AccessAction,
+    AccessOutcome,
     AccessRequest,
     CareEpisode,
     Grant,
@@ -27,6 +32,7 @@ from medvault.models import (
     Vault,
     utcnow,
 )
+from medvault.organizer import TYPE_LABEL, tag_text
 from medvault.security import hash_password
 
 DEMO_PASSWORD = "medvault-demo"
@@ -93,7 +99,7 @@ RECORDS = [
 ]  # fmt: skip
 
 
-def reset_and_seed(engine) -> dict[str, int]:
+def reset_and_seed(engine, kms: Kms) -> dict[str, int]:
     """Drop everything and load the demo data set. Returns row counts per table."""
     drop_db(engine)
     init_db(engine)
@@ -122,12 +128,15 @@ def reset_and_seed(engine) -> dict[str, int]:
 
         patients: dict[str, Patient] = {}
         vaults: dict[str, Vault] = {}
+        keks: dict[str, bytes] = {}
         for key, (mrn, dob, hospital_code) in PATIENTS.items():
             patients[key] = Patient(user_id=users[key].id, mrn=mrn, date_of_birth=dob)
             s.add(patients[key])
             s.flush()
             vaults[key] = Vault(patient_id=patients[key].id, key_version=1)
             s.add(vaults[key])
+            s.flush()
+            keks[key], vaults[key].wrapped_kek = kms.new_vault_key(vaults[key].id, 1)
             hospital = hospitals[hospital_code]
             s.add(
                 Grant(
@@ -137,6 +146,16 @@ def reset_and_seed(engine) -> dict[str, int]:
                     granted_by_user_id=users[key].id,
                     granted_at=now - timedelta(days=40),
                 )
+            )
+            audit.append(
+                s,
+                action=AccessAction.GRANT_CREATE,
+                outcome=AccessOutcome.ALLOWED,
+                summary=f"Gave {hospital.name} a key to your vault",
+                actor=users[key],
+                hospital_id=hospital.id,
+                patient_id=patients[key].id,
+                ts=now - timedelta(days=40),
             )
             s.add(
                 CareEpisode(
@@ -149,22 +168,53 @@ def reset_and_seed(engine) -> dict[str, int]:
         s.flush()
 
         for key, title, category, hospital_code, days_ago, body in RECORDS:
-            data = body.encode("utf-8")
-            s.add(
-                Record(
-                    vault_id=vaults[key].id,
-                    patient_id=patients[key].id,
-                    title=title,
-                    category=category,
-                    size_bytes=len(data),
-                    ciphertext=data,  # plaintext placeholder until VLT-4 (nonce None, key_version 0)
-                    uploaded_by_user_id=users[
-                        "doctor_a" if hospital_code == "HOSP-A" else "doctor_b"
-                    ].id,
-                    source_hospital_id=hospitals[hospital_code].id,
-                    created_at=now - timedelta(days=days_ago),
-                )
+            uploader = users["doctor_a" if hospital_code == "HOSP-A" else "doctor_b"]
+            created = now - timedelta(days=days_ago)
+            tagged = tag_text(
+                f"{title}\n{body}",
+                "text/plain",
+                doctor=uploader.full_name,
+                date_of_service=created.date().isoformat(),
             )
+            tagged["tags"]["record_type"] = TYPE_LABEL[category]  # the seed knows the type
+            record = Record(
+                vault_id=vaults[key].id,
+                patient_id=patients[key].id,
+                title=title,
+                category=category,
+                sensitivity=tagged["sensitivity"],
+                uploaded_by_user_id=uploader.id,
+                source_hospital_id=hospitals[hospital_code].id,
+                created_at=created,
+            )
+            s.add(record)
+            s.flush()
+            kms.encrypt_record(keks[key], record, body.encode("utf-8"), tagged["tags"], 1)
+            audit.append(
+                s,
+                action=AccessAction.RECORD_UPLOAD,
+                outcome=AccessOutcome.ALLOWED,
+                summary=f"Added {title}",
+                actor=uploader,
+                hospital_id=hospitals[hospital_code].id,
+                patient_id=patients[key].id,
+                record_id=record.id,
+                ts=created,
+            )
+
+        # Dr. Vasquez read Maya's MRI this morning: the first hospital read in her history.
+        knee_mri = s.exec(select(Record).where(Record.title == "Knee MRI report")).one()
+        audit.append(
+            s,
+            action=AccessAction.RECORD_VIEW,
+            outcome=AccessOutcome.ALLOWED,
+            summary="Opened Knee MRI report",
+            actor=users["doctor_a"],
+            hospital_id=hospitals["HOSP-A"].id,
+            patient_id=patients["patient"].id,
+            record_id=knee_mri.id,
+            ts=now - timedelta(hours=5),
+        )
 
         # Hospital B has asked Maya for access: drives the approve/deny demo (P9).
         s.add(
@@ -175,6 +225,16 @@ def reset_and_seed(engine) -> dict[str, int]:
                 reason="Orthopaedic referral: second opinion on knee MRI",
                 created_at=now - timedelta(hours=3),
             )
+        )
+        audit.append(
+            s,
+            action=AccessAction.REQUEST_CREATE,
+            outcome=AccessOutcome.ALLOWED,
+            summary="Requested access to your vault",
+            actor=users["doctor_b"],
+            hospital_id=hospitals["HOSP-B"].id,
+            patient_id=patients["patient"].id,
+            ts=now - timedelta(hours=3),
         )
         s.commit()
 
@@ -188,18 +248,18 @@ def reset_and_seed(engine) -> dict[str, int]:
         }
 
 
-def seed_if_empty(engine) -> bool:
+def seed_if_empty(engine, kms: Kms) -> bool:
     init_db(engine)
     with Session(engine) as s:
         if s.exec(select(User.id).limit(1)).first() is not None:
             return False
-    reset_and_seed(engine)
+    reset_and_seed(engine, kms)
     return True
 
 
 def main() -> None:
     settings = get_settings()
-    counts = reset_and_seed(make_engine(settings.database_url))
+    counts = reset_and_seed(make_engine(settings.database_url), Kms(settings.secret_key))
     print(f"Seeded {settings.database_url}: {counts}")
     print(f"Demo password for every account: {DEMO_PASSWORD}")
 

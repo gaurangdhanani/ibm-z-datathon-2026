@@ -22,26 +22,26 @@ Owners: Eng 1 = backend · Eng 2 = AI + frontend · the rest are the non-enginee
 
 **Done when:** patient → Hospital A → transfer to Hospital B works in the UI, and Hospital A's later attempt is denied and logged.
 
-- [ ] **VLT-1** KMS module and envelope encryption (AES-256-GCM) · Eng 1 · needs FND-3
-- [ ] **VLT-2** Hash-chained access log and GET /api/audit/verify · Eng 1 · needs FND-3
-- [ ] **VLT-3** Access broker: the single read path · Eng 1 · needs VLT-1, VLT-2
-- [ ] **VLT-4** Record upload and patient vault/record endpoints · Eng 1 · needs VLT-3
-- [ ] **VLT-5** Grants and access requests · Eng 1 · needs VLT-1, VLT-2
-- [ ] **VLT-6** Key swap: atomic transfer with DEK rotation · Eng 1 · needs VLT-1, VLT-5
-- [ ] **VLT-8** Hospital endpoints: patients list, record read, patient lookup · Eng 1 · needs VLT-3, VLT-5
-- [ ] **P2** My vault (home) · Eng 2 · needs VLT-4, VLT-5, P1
-- [ ] **P3** Upload record · Eng 2 · needs VLT-4, P2, ORG-2
-- [ ] **P5** View record · Eng 2 · needs VLT-4, P2
-- [ ] **P7** Who has my key · Eng 2 · needs VLT-5, VLT-6
-- [ ] **P8** Grant access · Eng 2 · needs VLT-5, P7
-- [ ] **P9** Approve or deny hospital requests · Eng 2 · needs VLT-5, VLT-6, P10
-- [ ] **P10** Move hospitals: key swap with animation · Eng 2 · needs VLT-6, P7
-- [ ] **H2** My patients · Eng 2 · needs VLT-8, H1
-- [ ] **H3** Patient record view · Eng 2 · needs VLT-8, H2, ORG-4
-- [ ] **H5** "Access revoked" screen · Eng 2 · needs VLT-6, VLT-3, H3
-- [ ] **H6** Request access · Eng 2 · needs VLT-5, VLT-8, H2
+- [x] **VLT-1** KMS module and envelope encryption (AES-256-GCM) · Eng 1 · needs FND-3
+- [x] **VLT-2** Hash-chained access log and GET /api/audit/verify · Eng 1 · needs FND-3
+- [x] **VLT-3** Access broker: the single read path · Eng 1 · needs VLT-1, VLT-2
+- [x] **VLT-4** Record upload and patient vault/record endpoints · Eng 1 · needs VLT-3
+- [x] **VLT-5** Grants and access requests · Eng 1 · needs VLT-1, VLT-2
+- [x] **VLT-6** Key swap: atomic transfer with DEK rotation · Eng 1 · needs VLT-1, VLT-5
+- [x] **VLT-8** Hospital endpoints: patients list, record read, patient lookup · Eng 1 · needs VLT-3, VLT-5
+- [x] **P2** My vault (home) · Eng 2 · needs VLT-4, VLT-5, P1
+- [x] **P3** Upload record · Eng 2 · needs VLT-4, P2, ORG-2
+- [x] **P5** View record · Eng 2 · needs VLT-4, P2
+- [x] **P7** Who has my key · Eng 2 · needs VLT-5, VLT-6
+- [x] **P8** Grant access · Eng 2 · needs VLT-5, P7
+- [x] **P9** Approve or deny hospital requests · Eng 2 · needs VLT-5, VLT-6, P10
+- [x] **P10** Move hospitals: key swap with animation · Eng 2 · needs VLT-6, P7
+- [x] **H2** My patients · Eng 2 · needs VLT-8, H1
+- [x] **H3** Patient record view · Eng 2 · needs VLT-8, H2, ORG-4
+- [x] **H5** "Access revoked" screen · Eng 2 · needs VLT-6, VLT-3, H3
+- [x] **H6** Request access · Eng 2 · needs VLT-5, VLT-8, H2
 
-UI skeleton for P2–P10 and H2–H6 runs on mock data (`frontend/src/lib/mock.ts`, see DECISIONS.md). Tick a ticket when its screen works against the live endpoint.
+Every P2–P10 and H2–H6 screen runs against the live endpoints (verified Sat, see DECISIONS.md "Phase 2"). `VITE_MOCK_API=true` still builds the browser-side mock for offline UI work.
 
 ## Phase 3 · Access rules, alerts & live updates (due Sat 23:00 CDT)
 

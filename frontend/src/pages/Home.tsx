@@ -37,9 +37,8 @@ export function AdminHome() {
       {USE_MOCK && (
         <Card title="Mock data" className="mb-4">
           <p className="text-sm text-ink/75">
-            Patient and hospital screens run on mock data in this browser until their endpoints
-            exist. Reset it to the seeded demo state (Maya's vault at Northside, Riverbend's pending
-            request).
+            This build runs on the browser-side mock (VITE_MOCK_API=true), not the live API. Reset it
+            to the seeded demo state (Maya's vault at Northside, Riverbend's pending request).
           </p>
           <div className="mt-3 flex items-center gap-3">
             <Button

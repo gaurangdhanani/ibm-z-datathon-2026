@@ -14,9 +14,10 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from sqlalchemy import text
 from starlette.datastructures import MutableHeaders
 
-from medvault import __version__, auth
+from medvault import __version__, audit, auth, hospital, patient
 from medvault.config import DEFAULT_SECRET_KEY, Settings, get_settings
 from medvault.db import init_db, make_engine
+from medvault.kms import Kms
 from medvault.seed import seed_if_empty
 
 log = logging.getLogger("medvault")
@@ -74,13 +75,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         level=settings.log_level.upper(), format="%(levelname)s %(name)s: %(message)s"
     )
     engine = make_engine(settings.database_url)
+    kms = Kms(settings.secret_key)  # master key lives here only; see kms.py
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         if settings.is_prod and settings.secret_key == DEFAULT_SECRET_KEY:
             raise RuntimeError("MEDVAULT_SECRET_KEY must be set when MEDVAULT_ENV=prod")
         init_db(engine)
-        if settings.auto_seed and seed_if_empty(engine):
+        if settings.auto_seed and seed_if_empty(engine, kms):
             log.info("Empty database: loaded the demo seed")
         app.state.started_at = time.time()
         yield
@@ -96,6 +98,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     app.state.settings = settings
     app.state.engine = engine
+    app.state.kms = kms
 
     # add_middleware wraps outermost-last: CORS innermost, security headers outermost.
     if settings.cors_origins and not settings.is_prod:
@@ -136,6 +139,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return JSONResponse(body, status_code=200 if db_ok else 503)
 
     app.include_router(auth.router)
+    app.include_router(audit.router)
+    app.include_router(patient.hospitals_router)
+    app.include_router(patient.router)
+    app.include_router(hospital.router)
     mount_spa(app, settings.static_path)
     return app
 

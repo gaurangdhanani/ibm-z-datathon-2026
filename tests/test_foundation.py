@@ -69,11 +69,11 @@ def test_seed_loads_every_persona_with_vaults_and_grants(app, client: TestClient
             grants = s.exec(select(Grant).where(Grant.patient_id == patient.id)).all()
             assert grants and all(g.key_version == vault.key_version for g in grants)
         records = s.exec(select(Record)).all()
-        assert len(records) == 9 and all(not r.is_encrypted for r in records)
+        assert len(records) == 9 and all(r.is_encrypted and r.key_version == 1 for r in records)
 
 
 def test_reseed_is_repeatable(app, client: TestClient) -> None:
-    counts = reset_and_seed(app.state.engine)
+    counts = reset_and_seed(app.state.engine, app.state.kms)
     assert counts["users"] == len(USERS)
     with Session(app.state.engine) as s:
         assert len(s.exec(select(User)).all()) == len(USERS)

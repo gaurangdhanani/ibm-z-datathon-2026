@@ -27,7 +27,7 @@ Testing steps, including the LinuxONE (s390x) procedure, are in [TEST.md](TEST.m
 
 | Path | What |
 | --- | --- |
-| `medvault/` | FastAPI backend: `config.py`, `db.py`, `models.py`, `auth.py`, `seed.py`, `main.py` |
+| `medvault/` | FastAPI backend: `config.py`, `db.py`, `models.py`, `auth.py`, `seed.py`, `main.py`; Phase 2: `kms.py` (envelope encryption), `audit.py` (hash chain), `broker.py` (the one read path), `organizer.py` (tags, group-by), `patient.py` and `hospital.py` (routes), `schemas.py` (API shapes) |
 | `tests/` | pytest suite (in-memory SQLite) |
 | `scripts/` | `linuxone_setup.sh` (s390x VM setup) and `smoke.sh` (health + login record) |
 | `frontend/` | Vite + React + Tailwind SPA; `src/components/ui.tsx` is the shared UI kit |
@@ -41,3 +41,5 @@ Copy `.env.example` to `.env` to override anything. Defaults are dev-safe. Set `
 ## API
 
 Interactive docs at `/api/docs` (dev only). Health at `/api/health` reports the machine architecture, which is how the s390x smoke test proves where it ran.
+
+Routes: `/api/auth/*` (login, sessions), `/api/patient/*` (vault, records, upload, grant, transfer, requests, access-log, alerts), `/api/hospital/*` (patients, record read, patient-lookup, request-access, requests), `/api/hospitals`, `/api/audit/verify`. Every record read goes through the broker and lands in the hash-chained access log; denials return `{"detail": {"code", "message"}}` with `no_grant`, `access_frozen` or `access_revoked`.

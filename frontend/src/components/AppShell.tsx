@@ -36,7 +36,7 @@ export function MockDataPill() {
   if (!USE_MOCK) return null;
   return (
     <span
-      title="Phase 2 screens run on mock data until their endpoints exist (DECISIONS.md)"
+      title="Running on the browser-side mock (VITE_MOCK_API=true), not the live API"
       className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-900 ring-1 ring-amber-200"
     >
       Mock data

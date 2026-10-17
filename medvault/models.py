@@ -201,8 +201,8 @@ class Vault(SQLModel, table=True):
 class Record(SQLModel, table=True):
     """An encrypted document. Demo files are small, so ciphertext lives inline.
 
-    ``nonce is None`` means the body is still plaintext placeholder data from the seed;
-    VLT-4 replaces it with envelope encryption and sets key_version to the vault's.
+    Envelope encryption (kms.py): ``ciphertext`` is AES-256-GCM under a per-record DEK stored
+    wrapped by the vault KEK in ``wrapped_dek``; ``key_version`` says which KEK version wrapped it.
     """
 
     __tablename__ = "records"
@@ -216,6 +216,9 @@ class Record(SQLModel, table=True):
     )
     mime_type: str = Field(default="text/plain", max_length=100)
     size_bytes: int = Field(default=0)
+    sensitivity: int = Field(
+        default=1
+    )  # 1 routine · 2 confidential · 3 restricted (RUL-1 freezes clerks)
     ciphertext: bytes | None = Field(default=None)
     nonce: bytes | None = Field(default=None)
     wrapped_dek: bytes | None = Field(default=None)
@@ -308,7 +311,7 @@ class CareEpisode(SQLModel, table=True):
 
 
 class AccessLog(SQLModel, table=True):
-    """Append-only, hash-chained access log. VLT-2 fills prev_hash/entry_hash and verifies."""
+    """Append-only, hash-chained access log (audit.append / audit.verify, VLT-2)."""
 
     __tablename__ = "access_log"
 
@@ -320,7 +323,9 @@ class AccessLog(SQLModel, table=True):
     record_id: int | None = Field(default=None, foreign_key="records.id")
     action: AccessAction = Field(sa_type=enum_type(AccessAction), index=True)
     outcome: AccessOutcome = Field(sa_type=enum_type(AccessOutcome))
-    reason: str = Field(default="", max_length=500)
+    reason: str = Field(default="", max_length=500)  # deny reason, e.g. "access revoked"
+    summary: str = Field(default="", max_length=200)  # plain language: "Opened Knee MRI report"
+    reasons_json: str = Field(default="[]", max_length=2000)  # [{kind, text}] shown by the UI
     risk_level: RiskLevel = Field(default=RiskLevel.NONE, sa_type=enum_type(RiskLevel))
     risk_score: float | None = Field(default=None)
     client_ip: str = Field(default="", max_length=64)

@@ -170,7 +170,7 @@ export function RecordBody({ content }: { content: RecordContent }) {
     return (
       <EmptyState
         title="Content not available"
-        hint="With mock data, uploaded photos and PDFs are kept only until the page is refreshed."
+        hint="The vault returned no bytes for this record."
       />
     );
   }
