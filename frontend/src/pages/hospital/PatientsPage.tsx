@@ -1,105 +1,92 @@
 import { useState } from "react";
 import { Link } from "react-router";
-import { Search, UserPlus } from "lucide-react";
+import { Info, Search, Users } from "lucide-react";
 
-import { Badge, Card, EmptyState, ErrorState, Input, LoadingCards, PageHeader, SyntheticBadge } from "../../components/ui";
-import { useAuth } from "../../lib/auth";
+import { Card, EmptyState, ErrorState, Input, LoadingCards, StatusDot } from "../../components/ui";
 import { hospitalApi, useResource } from "../../lib/data";
 import { formatDate } from "../../lib/format";
+import { KEY_STATUS_LABEL } from "../../lib/types";
 import type { HospitalPatient } from "../../lib/types";
+import { CardHeading, RecentRequestsCard, RequestAccessCard } from "./RequestAccess";
 
-export const KEY_STATUS: Record<HospitalPatient["key_status"], { label: string; status: "active" | "frozen" | "pending" }> = {
-  active: { label: "Active", status: "active" },
-  frozen: { label: "Frozen", status: "frozen" },
-  emergency: { label: "Emergency", status: "pending" },
+const DOT: Record<HospitalPatient["key_status"], "active" | "frozen" | "pending"> = {
+  active: "active",
+  frozen: "frozen",
+  emergency: "pending",
 };
 
-/** H2: patients whose vault this hospital holds an active or frozen key for. */
+/** Hospital workspace (mockup page 3): H2 my patients on the left, H6 request access and the
+ *  recent requests on the right. One screen, no tabs. */
 export default function PatientsPage() {
-  const { user } = useAuth();
   const [query, setQuery] = useState("");
   const patients = useResource(() => hospitalApi.getPatients(query), [query]);
   const rows = patients.data ?? [];
 
   return (
-    <>
-      <PageHeader
-        title="My patients"
-        subtitle={`Patients who gave ${user?.hospital_name ?? "your hospital"} a key to their vault.`}
-        actions={
-          <Link
-            to="/hospital/requests"
-            className="inline-flex items-center gap-2 rounded-lg bg-forest-800 px-4 py-2 text-sm font-medium text-white hover:bg-forest-900"
-          >
-            <UserPlus size={16} /> Request access
-          </Link>
-        }
-      />
-      <Card className="p-0">
-        <div className="flex items-center gap-2 border-b border-sage-200 p-4">
-          <Search size={18} className="text-ink/50" />
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)]">
+      <Card className="self-start">
+        <CardHeading icon={<Users size={22} strokeWidth={1.7} />} title="My patients" subtitle="Patients you have access to" />
+        <div className="relative">
+          <Search size={18} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-ink/50" />
           <Input
             type="search"
             aria-label="Search patients"
-            placeholder="Search by name or MRN"
+            placeholder="Search patients…"
+            className="pl-10"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="max-w-sm"
           />
         </div>
-        {patients.error && !patients.data ? (
-          <div className="p-4">
+        <div className="mt-3">
+          {patients.error && !patients.data ? (
             <ErrorState error={patients.error} onRetry={patients.reload} />
-          </div>
-        ) : !patients.data ? (
-          <div className="p-4">
+          ) : !patients.data ? (
             <LoadingCards count={2} />
-          </div>
-        ) : rows.length === 0 ? (
-          <div className="p-4">
+          ) : rows.length === 0 ? (
             <EmptyState
               title={query ? "No patients match that search" : "No patients have given you a key yet"}
               hint="Ask a patient for access; they approve it on their phone."
             />
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="text-xs tracking-wide text-ink/60 uppercase">
-                <tr>
-                  <th className="px-4 py-3 font-medium">Patient</th>
-                  <th className="px-4 py-3 font-medium">Date of birth</th>
-                  <th className="px-4 py-3 font-medium">Key status</th>
-                  <th className="px-4 py-3 font-medium">Last visit</th>
-                  <th className="px-4 py-3" />
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-sage-200">
-                {rows.map((p) => (
-                  <tr key={p.patient_id} className="hover:bg-white/60">
-                    <td className="px-4 py-3">
-                      <span className="block font-medium text-ink">{p.full_name}</span>
-                      <span className="text-xs text-ink/60">{p.mrn}</span>
-                    </td>
-                    <td className="px-4 py-3 text-ink/80">
-                      {formatDate(p.date_of_birth)} <SyntheticBadge />
-                    </td>
-                    <td className="px-4 py-3">
-                      <Badge status={KEY_STATUS[p.key_status].status}>{KEY_STATUS[p.key_status].label}</Badge>
-                    </td>
-                    <td className="px-4 py-3 text-ink/80">{p.last_visit ? formatDate(p.last_visit) : "—"}</td>
-                    <td className="px-4 py-3 text-right">
-                      <Link to={`/hospital/patients/${p.patient_id}`} className="font-medium text-forest-800 hover:underline">
-                        Open records
-                      </Link>
-                    </td>
+          ) : (
+            <div className="overflow-x-auto rounded-xl ring-1 ring-sage-200">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-sage-50 text-xs font-semibold text-ink/70">
+                  <tr>
+                    <th className="px-4 py-2.5">Patient</th>
+                    <th className="px-4 py-2.5">Patient ID</th>
+                    <th className="px-4 py-2.5">Status</th>
+                    <th className="px-4 py-2.5">Last visit</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody className="divide-y divide-sage-200 bg-white/60">
+                  {rows.map((p) => (
+                    <tr key={p.patient_id} className="hover:bg-forest-50/60">
+                      <td className="px-4 py-2.5">
+                        <Link to={`/hospital/patients/${p.patient_id}`} className="font-medium text-ink hover:underline">
+                          {p.full_name}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-2.5 text-ink/80">{p.mrn}</td>
+                      <td className="px-4 py-2.5">
+                        <StatusDot status={DOT[p.key_status]}>{KEY_STATUS_LABEL[p.key_status]}</StatusDot>
+                      </td>
+                      <td className="px-4 py-2.5 text-ink/80">{p.last_visit ? formatDate(p.last_visit) : "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+        <p className="mt-3 flex items-center gap-2 rounded-lg bg-forest-50 px-3 py-2.5 text-sm text-ink/80">
+          <Info size={18} className="shrink-0 text-ink/50" /> Revoked patients are removed from this list.
+        </p>
       </Card>
-    </>
+
+      <div className="flex flex-col gap-4">
+        <RequestAccessCard />
+        <RecentRequestsCard />
+      </div>
+    </div>
   );
 }

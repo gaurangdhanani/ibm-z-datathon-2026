@@ -16,7 +16,7 @@ export function cx(...parts: Array<string | false | null | undefined>): string {
   return parts.filter(Boolean).join(" ");
 }
 
-type ButtonVariant = "primary" | "secondary" | "danger" | "danger-outline" | "ghost";
+type ButtonVariant = "primary" | "secondary" | "danger" | "danger-outline" | "warning" | "ghost";
 
 const BUTTON: Record<ButtonVariant, string> = {
   primary: "bg-forest-800 text-white hover:bg-forest-900 focus-visible:outline-forest-800",
@@ -25,6 +25,9 @@ const BUTTON: Record<ButtonVariant, string> = {
   danger: "bg-red-700 text-white hover:bg-red-800 focus-visible:outline-red-700",
   "danger-outline":
     "bg-white/70 text-red-700 ring-1 ring-red-700 hover:bg-red-50 focus-visible:outline-red-700",
+  // Emergency access in the mockups is amber, not red: urgent, but a legitimate action.
+  warning:
+    "bg-amber-50 font-semibold text-amber-800 ring-1 ring-amber-500 hover:bg-amber-100 focus-visible:outline-amber-600",
   ghost: "text-ink hover:bg-sage-100 focus-visible:outline-forest-800",
 };
 
@@ -85,13 +88,14 @@ export function Card({
 }
 
 /** Status vocabulary shared by grants, requests and alerts. Frozen is amber, revoked is red. */
-export type Status = "active" | "frozen" | "revoked" | "pending" | "neutral" | "high";
+export type Status = "active" | "frozen" | "revoked" | "pending" | "waiting" | "neutral" | "high";
 
 const BADGE: Record<Status, string> = {
   active: "bg-emerald-100 text-emerald-800 ring-emerald-200",
   frozen: "bg-amber-100 text-amber-900 ring-amber-200",
   revoked: "bg-red-100 text-red-800 ring-red-200",
   pending: "bg-sky-100 text-sky-800 ring-sky-200",
+  waiting: "bg-amber-100 text-amber-900 ring-amber-200",
   high: "bg-red-600 text-white ring-red-700",
   neutral: "bg-sage-100 text-ink/80 ring-sage-200",
 };
@@ -215,16 +219,52 @@ export function FullPage({ children }: { children: ReactNode }) {
   return <div className="flex min-h-screen items-center justify-center p-6">{children}</div>;
 }
 
-export function Avatar({ name, className }: { name: string; className?: string }) {
+export function Avatar({ name, className, tone = "dark" }: { name: string; className?: string; tone?: "dark" | "light" }) {
   return (
     <span
       aria-hidden
       className={cx(
-        "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-forest-800 text-sm font-semibold text-white",
+        "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-semibold",
+        tone === "light" ? "bg-forest-100 text-forest-900" : "bg-forest-800 text-white",
         className,
       )}
     >
       {initials(name)}
+    </span>
+  );
+}
+
+/** "● Active" / "● Paused" in the My patients table (mockup page 3). */
+const DOT: Record<"active" | "frozen" | "pending" | "revoked", [string, string]> = {
+  active: ["bg-emerald-600", "text-ink"],
+  frozen: ["bg-amber-500", "text-amber-700"],
+  pending: ["bg-sky-500", "text-sky-800"],
+  revoked: ["bg-red-600", "text-red-700"],
+};
+
+export function StatusDot({ status, children }: { status: keyof typeof DOT; children: ReactNode }) {
+  const [dot, text] = DOT[status];
+  return (
+    <span className={cx("inline-flex items-center gap-2 text-sm", text)}>
+      <span aria-hidden className={cx("h-2.5 w-2.5 shrink-0 rounded-full", dot)} />
+      {children}
+    </span>
+  );
+}
+
+const PILL: Record<"danger" | "warning" | "success" | "neutral", string> = {
+  danger: "bg-red-100 text-red-800",
+  warning: "bg-amber-100 text-amber-900",
+  success: "bg-emerald-50 text-emerald-800",
+  neutral: "bg-sage-100 text-ink/80",
+};
+
+/** Wide status pill with an icon: "AI risk: High", "Access paused", "Emergency access · 59:42 remaining". */
+export function Pill({ tone = "neutral", icon, children }: { tone?: keyof typeof PILL; icon?: ReactNode; children: ReactNode }) {
+  return (
+    <span className={cx("inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium", PILL[tone])}>
+      {icon}
+      {children}
     </span>
   );
 }
@@ -351,12 +391,14 @@ export function Modal({
   labelledBy,
   children,
   sheet = false,
+  size = "sm",
 }: {
   open: boolean;
   onClose: () => void;
   labelledBy: string;
   children: ReactNode;
   sheet?: boolean;
+  size?: "sm" | "lg";
 }) {
   const panel = useRef<HTMLDivElement>(null);
   const closeRef = useRef(onClose);
@@ -383,7 +425,11 @@ export function Modal({
         aria-labelledby={labelledBy}
         className={cx(
           "relative w-full bg-cream shadow-xl",
-          sheet ? "max-h-[92vh] max-w-[480px] overflow-y-auto rounded-t-3xl p-5 pb-8 sm:rounded-3xl" : "max-w-sm rounded-2xl p-5",
+          sheet
+            ? "max-h-[92vh] max-w-[480px] overflow-y-auto rounded-t-3xl p-5 pb-8 sm:rounded-3xl"
+            : size === "lg"
+              ? "max-h-[92vh] max-w-2xl overflow-y-auto rounded-2xl p-6"
+              : "max-w-sm rounded-2xl p-5",
         )}
       >
         {sheet && (

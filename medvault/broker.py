@@ -254,7 +254,15 @@ def open_record(
         )
         session.commit()
         events.publish("alert", patient_id=record.patient_id, hospital_id=user.hospital_id)
-        raise HTTPException(403, {"code": "access_frozen", "message": DENIALS["access_frozen"][0]})
+        # The reasons ride along so the hospital screen can say why (UI page 4: "Reason for block").
+        raise HTTPException(
+            403,
+            {
+                "code": "access_frozen",
+                "message": DENIALS["access_frozen"][0],
+                "reasons": verdict.reasons,
+            },
+        )
 
     entry = audit.append(
         session,

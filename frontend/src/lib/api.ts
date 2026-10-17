@@ -1,9 +1,13 @@
+import type { Reason } from "./types";
+
 export class ApiError extends Error {
   constructor(
     public status: number,
     message: string,
     /** Machine-readable reason, e.g. "access_frozen" (see lib/types.ts BlockedCode). */
     public code: string | null = null,
+    /** Plain-language rule reasons on a blocked read ("Sensitive record (Psychiatry)"). */
+    public reasons: Reason[] = [],
   ) {
     super(message);
   }
@@ -14,7 +18,12 @@ async function errorFrom(res: Response): Promise<ApiError> {
   const body = await res.json().catch(() => ({}));
   const detail = body.detail;
   if (detail && typeof detail === "object") {
-    return new ApiError(res.status, detail.message ?? res.statusText, detail.code ?? null);
+    return new ApiError(
+      res.status,
+      detail.message ?? res.statusText,
+      detail.code ?? null,
+      Array.isArray(detail.reasons) ? detail.reasons : [],
+    );
   }
   return new ApiError(res.status, detail ?? res.statusText, body.code ?? null);
 }

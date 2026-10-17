@@ -84,6 +84,7 @@ def hospital_patient(
         date_of_birth=patient.date_of_birth,
         key_status=key_status,
         last_visit=last or (grant.granted_at if grant else emergency.created_at),
+        emergency_expires_at=emergency.expires_at if grant is None and emergency else None,
     )
 
 

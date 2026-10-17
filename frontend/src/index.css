@@ -103,3 +103,45 @@
     transition-duration: 1ms !important;
   }
 }
+
+/* Calm access states (mockup page 5): the lock closes / the key cracks once, under a second. */
+.lock-close {
+  animation: lock-close 600ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+.key-crack {
+  transform-origin: 50% 60%;
+  animation: key-crack 700ms ease-out both;
+}
+
+@keyframes lock-close {
+  from {
+    transform: translateY(-12px) scale(0.85);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(2px) scale(1.05);
+    opacity: 1;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes key-crack {
+  0% {
+    transform: none;
+  }
+  25% {
+    transform: rotate(-14deg);
+  }
+  50% {
+    transform: rotate(12deg);
+  }
+  75% {
+    transform: rotate(-8deg);
+  }
+  100% {
+    transform: rotate(-20deg) translateY(2px);
+  }
+}

@@ -2,15 +2,20 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import {
+  Bone,
+  Calendar,
   ChevronDown,
+  ChevronRight,
   ClipboardList,
   ExternalLink,
   FileText,
   FlaskConical,
+  Folder,
   Lock,
   Pill,
   ScanLine,
   StickyNote,
+  User,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -28,12 +33,67 @@ const CATEGORY_ICON: Record<RecordCategory, LucideIcon> = {
   other: FileText,
 };
 
+/** Short category names for the hospital record list ("Imaging · Oct 12, 2026"). */
+export const CATEGORY_LABEL: Record<RecordCategory, string> = {
+  imaging: "Imaging",
+  lab: "Lab result",
+  note: "Clinical note",
+  prescription: "Prescription",
+  discharge: "Discharge summary",
+  other: "Document",
+};
+
 export function RecordIcon({ category, size = 24 }: { category: RecordCategory; size?: number }) {
   const Icon = CATEGORY_ICON[category];
   return <Icon size={size} strokeWidth={1.7} />;
 }
 
-export function GroupByChips({ value, onChange }: { value: GroupBy; onChange: (by: GroupBy) => void }) {
+const GROUP_ICON: Record<GroupBy, LucideIcon> = {
+  doctor: User,
+  body_part: Bone,
+  condition: FileText,
+  record_type: Folder,
+  date: Calendar,
+};
+
+/** Group-by switcher: pills on the patient's phone (page 2), an underlined tab bar with icons on
+ *  the hospital workspace (page 3). */
+export function GroupByChips({
+  value,
+  onChange,
+  variant = "chips",
+}: {
+  value: GroupBy;
+  onChange: (by: GroupBy) => void;
+  variant?: "chips" | "tabs";
+}) {
+  if (variant === "tabs") {
+    return (
+      <div role="tablist" aria-label="Group records by" className="flex gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {GROUP_BY_OPTIONS.map((o) => {
+          const Icon = GROUP_ICON[o.value];
+          const active = value === o.value;
+          return (
+            <button
+              key={o.value}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => onChange(o.value)}
+              className={cx(
+                "-mb-px inline-flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm whitespace-nowrap transition",
+                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest-800",
+                active ? "border-forest-800 font-semibold text-forest-900" : "border-transparent text-ink/70 hover:text-ink",
+              )}
+            >
+              <Icon size={18} strokeWidth={active ? 2.2 : 1.8} />
+              {o.label}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
   return (
     <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden" role="group" aria-label="Group records by">
       {GROUP_BY_OPTIONS.map((o) => (
@@ -45,15 +105,20 @@ export function GroupByChips({ value, onChange }: { value: GroupBy; onChange: (b
   );
 }
 
-/** Collapsible groups like "Knee · 2 records · Dr. Elena Vasquez". Key it by `by` to reset. */
+export type RecordListVariant = "patient" | "hospital";
+
+/** Collapsible groups like "Knee · 2 records · Dr. Elena Vasquez". Key it by `by` to reset.
+ *  The hospital variant is the compact list from mockup page 3 (grey group bars, chevrons). */
 export function RecordGroups({
   groups,
   hrefFor,
   selectedId,
+  variant = "patient",
 }: {
   groups: RecordGroup[];
   hrefFor: (r: RecordSummary) => string;
   selectedId?: number;
+  variant?: RecordListVariant;
 }) {
   const [open, setOpen] = useState<Set<string>>(
     () => new Set(groups.filter((g, i) => i === 0 || g.key === "organizing").map((g) => g.key)),
@@ -66,6 +131,36 @@ export function RecordGroups({
       return next;
     });
 
+  if (variant === "hospital") {
+    return (
+      <div className="flex flex-col gap-2">
+        {groups.map((g) => {
+          const expanded = open.has(g.key);
+          return (
+            <section key={g.key}>
+              <button
+                type="button"
+                onClick={() => toggle(g.key)}
+                aria-expanded={expanded}
+                className="flex w-full items-center gap-2 rounded-lg bg-sage-100/80 px-3 py-2 text-left text-sm font-semibold text-ink"
+              >
+                <ChevronDown size={16} className={cx("shrink-0 transition", !expanded && "-rotate-90")} />
+                {g.label}{" "}
+                <span className="font-normal text-ink/60">· {plural(g.count, "record")}</span>
+              </button>
+              {expanded && (
+                <div className="mt-2 flex flex-col gap-2">
+                  {g.records.map((r) => (
+                    <RecordRow key={r.id} record={r} href={hrefFor(r)} active={r.id === selectedId} variant="hospital" />
+                  ))}
+                </div>
+              )}
+            </section>
+          );
+        })}
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col gap-3">
       {groups.map((g) => {
@@ -102,8 +197,51 @@ export function RecordGroups({
   );
 }
 
-export function RecordRow({ record, href, active }: { record: RecordSummary; href: string; active?: boolean }) {
+/** Red outlined "Sensitive" pill on level-3 records (hospital list, snooping attempt). */
+export function SensitivePill() {
+  return (
+    <span className="inline-flex shrink-0 rounded-full border border-red-400 bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700">
+      Sensitive
+    </span>
+  );
+}
+
+export function RecordRow({
+  record,
+  href,
+  active,
+  variant = "patient",
+}: {
+  record: RecordSummary;
+  href: string;
+  active?: boolean;
+  variant?: RecordListVariant;
+}) {
   const t = record.tags;
+  if (variant === "hospital") {
+    return (
+      <Link
+        to={href}
+        aria-current={active ? "true" : undefined}
+        className={cx(
+          "flex items-center gap-3 rounded-xl p-3 ring-1 transition",
+          active ? "bg-forest-50 ring-forest-300" : "bg-white/70 ring-sage-200 hover:bg-white",
+        )}
+      >
+        <IconTile className={cx("h-11 w-11", active && "bg-forest-100 text-forest-800")}>
+          <RecordIcon category={record.category} size={22} />
+        </IconTile>
+        <span className="min-w-0 flex-1">
+          <span className="block truncate font-semibold text-ink">{record.title}</span>
+          <span className="block text-sm text-ink/70">
+            {CATEGORY_LABEL[record.category]} · {formatDate(t?.date_of_service ?? record.created_at)}
+          </span>
+        </span>
+        {record.sensitivity === 3 && <SensitivePill />}
+        <ChevronRight size={18} className="shrink-0 text-ink/60" />
+      </Link>
+    );
+  }
   return (
     <Link
       to={href}

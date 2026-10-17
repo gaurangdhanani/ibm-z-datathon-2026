@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 
 import { AppShell, RequireRole } from "./components/AppShell";
 import { PatientShell } from "./components/PatientShell";
@@ -10,7 +10,6 @@ import FeedPage from "./pages/admin/FeedPage";
 import MetricsPage from "./pages/admin/MetricsPage";
 import PatientRecordsPage from "./pages/hospital/PatientRecordsPage";
 import PatientsPage from "./pages/hospital/PatientsPage";
-import RequestsPage from "./pages/hospital/RequestsPage";
 import AlertsPage from "./pages/patient/AlertsPage";
 import HistoryPage from "./pages/patient/HistoryPage";
 import KeysPage from "./pages/patient/KeysPage";
@@ -51,7 +50,7 @@ export default function App() {
             <Route index element={<PatientsPage />} />
             <Route path="patients/:patientId" element={<PatientRecordsPage />} />
             <Route path="patients/:patientId/records/:recordId" element={<PatientRecordsPage />} />
-            <Route path="requests" element={<RequestsPage />} />
+            <Route path="requests" element={<Navigate to="/hospital" replace />} />
           </Route>
 
           <Route

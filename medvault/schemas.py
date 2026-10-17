@@ -147,6 +147,7 @@ class HospitalPatient(BaseModel):
     date_of_birth: date
     key_status: Literal["active", "frozen", "emergency"]
     last_visit: datetime | None
+    emergency_expires_at: datetime | None = None  # set while key_status == "emergency"
 
 
 class HospitalPatientView(BaseModel):

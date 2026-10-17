@@ -53,3 +53,30 @@ export function initials(name: string): string {
 }
 
 export const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+
+/** "just now", "2 min ago", "1 hour ago", "3 days ago" (recent requests on the hospital page). */
+export function timeAgo(iso: string, now: Date = new Date()): string {
+  const seconds = Math.max(0, Math.round((now.getTime() - toDate(iso).getTime()) / 1000));
+  if (seconds < 60) return "just now";
+  const minutes = Math.round(seconds / 60);
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+  const days = Math.round(hours / 24);
+  return `${days} day${days === 1 ? "" : "s"} ago`;
+}
+
+/** Whole years between a date of birth and `on` (today by default). */
+export function ageOn(dob: string, on: Date = new Date()): number {
+  const born = toDate(dob);
+  const years = on.getFullYear() - born.getFullYear();
+  const beforeBirthday =
+    on.getMonth() < born.getMonth() || (on.getMonth() === born.getMonth() && on.getDate() < born.getDate());
+  return beforeBirthday ? years - 1 : years;
+}
+
+/** "59:42" until the given time; "0:00" once it has passed (emergency access countdown). */
+export function countdown(untilIso: string, now: Date = new Date()): string {
+  const seconds = Math.max(0, Math.floor((toDate(untilIso).getTime() - now.getTime()) / 1000));
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+}

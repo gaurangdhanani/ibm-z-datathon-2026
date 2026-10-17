@@ -152,6 +152,8 @@ export interface HospitalPatient {
   date_of_birth: string;
   key_status: "active" | "frozen" | "emergency";
   last_visit: string | null;
+  /** Set while key_status is "emergency": drives the countdown pill on the records page. */
+  emergency_expires_at: string | null;
 }
 
 export interface HospitalPatientView {
@@ -310,3 +312,10 @@ export const GROUP_BY_OPTIONS: Array<{ value: GroupBy; label: string }> = [
   { value: "record_type", label: "Type" },
   { value: "date", label: "Date" },
 ];
+
+/** Hospital-side key status words (mockup page 5: the UI word for frozen is "Paused"). */
+export const KEY_STATUS_LABEL: Record<HospitalPatient["key_status"], string> = {
+  active: "Active",
+  frozen: "Paused",
+  emergency: "Emergency",
+};
