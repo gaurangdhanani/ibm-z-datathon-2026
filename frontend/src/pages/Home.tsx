@@ -1,10 +1,7 @@
-import { useState } from "react";
 import { Link, Navigate } from "react-router";
 
 import { homeFor, useAuth } from "../lib/auth";
-import { USE_MOCK } from "../lib/data";
-import { resetMock } from "../lib/mock";
-import { Banner, Button, Card, EmptyState, FullPage, PageHeader, Spinner } from "../components/ui";
+import { Card, FullPage, Spinner } from "../components/ui";
 
 /** "/" sends each role to its home. */
 export function HomeRedirect() {
@@ -17,46 +14,6 @@ export function HomeRedirect() {
     );
   }
   return <Navigate to={user ? homeFor(user) : "/login"} replace />;
-}
-
-/** Stand-in for a screen another ticket delivers; keeps every route reachable from day one. */
-export function Placeholder({ title, ticket, hint }: { title: string; ticket: string; hint?: string }) {
-  return (
-    <>
-      <PageHeader title={title} />
-      <EmptyState title={`Coming in ${ticket}`} hint={hint} />
-    </>
-  );
-}
-
-export function AdminHome() {
-  const [done, setDone] = useState(false);
-  return (
-    <>
-      <PageHeader title="Demo control" subtitle="Attacker panel, scenarios and demo reset" />
-      {USE_MOCK && (
-        <Card title="Mock data" className="mb-4">
-          <p className="text-sm text-ink/75">
-            This build runs on the browser-side mock (VITE_MOCK_API=true), not the live API. Reset it
-            to the seeded demo state (Maya's vault at Northside, Riverbend's pending request).
-          </p>
-          <div className="mt-3 flex items-center gap-3">
-            <Button
-              variant="secondary"
-              onClick={() => {
-                resetMock();
-                setDone(true);
-              }}
-            >
-              Reset mock data
-            </Button>
-            {done && <Banner tone="success">Mock data reset.</Banner>}
-          </div>
-        </Card>
-      )}
-      <EmptyState title="Coming in S5 / S6" />
-    </>
-  );
 }
 
 export function Forbidden() {

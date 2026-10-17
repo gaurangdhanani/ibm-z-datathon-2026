@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Link, useParams } from "react-router";
-import { Ban, ChevronLeft, Eye, KeyRound, Lock } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router";
+import { Ban, ChevronLeft, Eye, KeyRound, Lock, ShieldAlert } from "lucide-react";
 
 import { GroupByChips, RecordBody, RecordGroups } from "../../components/records";
 import {
@@ -17,8 +17,9 @@ import {
 } from "../../components/ui";
 import { ApiError } from "../../lib/api";
 import { hospitalApi, useResource } from "../../lib/data";
-import { formatDate } from "../../lib/format";
+import { formatDate, formatWhen } from "../../lib/format";
 import type { BlockedCode, GroupBy } from "../../lib/types";
+import { BreakGlassButton } from "./BreakGlass";
 import { KEY_STATUS } from "./PatientsPage";
 
 const BLOCKED: Record<BlockedCode, { tone: string; icon: typeof Lock; title: string; body: string }> = {
@@ -46,8 +47,9 @@ function blockedCode(error: Error | null): BlockedCode | null {
   return error instanceof ApiError && error.code && error.code in BLOCKED ? (error.code as BlockedCode) : null;
 }
 
-/** H4 frozen and H5 revoked: a full panel, never any record content. */
-function AccessBlocked({ code }: { code: BlockedCode }) {
+/** H4 frozen and H5 revoked: a full panel, never any record content. H7 break-glass is offered
+ *  when there is no working key; a freeze is the patient's decision and cannot be broken through. */
+function AccessBlocked({ code, patientId, onEmergency }: { code: BlockedCode; patientId: number; onEmergency: () => void }) {
   const b = BLOCKED[code];
   const Icon = b.icon;
   return (
@@ -56,10 +58,13 @@ function AccessBlocked({ code }: { code: BlockedCode }) {
       <h2 className="font-serif text-2xl">{b.title}</h2>
       <p className="max-w-md">{b.body}</p>
       <p className="text-xs opacity-70">This attempt was logged and is visible to the patient.</p>
-      {code === "no_grant" && (
-        <Link to="/hospital/requests" className="font-medium text-forest-800 underline">
-          Request access
-        </Link>
+      {code !== "access_frozen" && (
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+          <Link to="/hospital/requests" className="font-medium text-forest-800 underline">
+            Request access
+          </Link>
+          <BreakGlassButton patientId={patientId} patientName="this patient" onDone={onEmergency} />
+        </div>
       )}
     </div>
   );
@@ -103,11 +108,18 @@ export default function PatientRecordsPage() {
   const params = useParams();
   const patientId = Number(params.patientId);
   const recordId = params.recordId ? Number(params.recordId) : null;
+  const navigate = useNavigate();
   const [by, setBy] = useState<GroupBy>("body_part");
   const view = useResource(() => hospitalApi.getPatientGroups(patientId, by), [patientId, by]);
-  const [readBlocked, setReadBlocked] = useState<{ recordId: number; code: BlockedCode } | null>(null);
+  const [readBlocked, setReadBlocked] = useState<BlockedCode | null>(null);
 
-  const blocked = blockedCode(view.error) ?? (readBlocked?.recordId === recordId ? readBlocked.code : null);
+  // A blocked read drops the selected record from the URL, so a later restore (which refetches
+  // the view over the event stream) shows the list again without silently re-opening the record.
+  useEffect(() => {
+    if (view.data && !view.error) setReadBlocked(null);
+  }, [view.data, view.error]);
+
+  const blocked = blockedCode(view.error) ?? readBlocked;
   const patient = view.data?.patient;
 
   return (
@@ -118,7 +130,14 @@ export default function PatientRecordsPage() {
 
       {blocked ? (
         <div className="mt-4">
-          <AccessBlocked code={blocked} />
+          <AccessBlocked
+            code={blocked}
+            patientId={patientId}
+            onEmergency={() => {
+              setReadBlocked(null);
+              view.reload();
+            }}
+          />
         </div>
       ) : view.error && !view.data ? (
         <div className="mt-4">
@@ -141,9 +160,16 @@ export default function PatientRecordsPage() {
             </p>
           </Card>
 
-          <p className="mt-3 flex items-center gap-2 rounded-lg bg-sky-50 px-4 py-2.5 text-sm text-sky-950 ring-1 ring-sky-200">
-            <Eye size={18} className="shrink-0" /> Every record you open is logged and visible to the patient.
-          </p>
+          {patient.key_status === "emergency" ? (
+            <p className="mt-3 flex items-center gap-2 rounded-lg bg-red-50 px-4 py-2.5 text-sm text-red-950 ring-1 ring-red-200" role="status">
+              <ShieldAlert size={18} className="shrink-0 text-red-700" /> Emergency access, no key held. Every record you open is
+              logged and the patient has been notified{patient.last_visit ? ` (opened ${formatWhen(patient.last_visit)})` : ""}.
+            </p>
+          ) : (
+            <p className="mt-3 flex items-center gap-2 rounded-lg bg-sky-50 px-4 py-2.5 text-sm text-sky-950 ring-1 ring-sky-200">
+              <Eye size={18} className="shrink-0" /> Every record you open is logged and visible to the patient.
+            </p>
+          )}
 
           <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
             <div>
@@ -166,7 +192,10 @@ export default function PatientRecordsPage() {
                 <Viewer
                   key={recordId}
                   recordId={recordId}
-                  onBlocked={(code) => setReadBlocked({ recordId, code })}
+                  onBlocked={(code) => {
+                    setReadBlocked(code);
+                    navigate(`/hospital/patients/${patientId}`, { replace: true });
+                  }}
                 />
               ) : (
                 <EmptyState title="Select a record to open it" hint="Opening a record decrypts it through the broker and logs the read." />

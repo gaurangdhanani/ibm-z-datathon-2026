@@ -51,6 +51,12 @@ class Settings(BaseSettings):
     max_body_mb: int = 10
     log_level: str = "info"
 
+    # Access rules (RUL-1) and break-glass (VLT-7). Off-hours is judged in this timezone.
+    timezone: str = "America/Chicago"
+    off_hours_start: int = 22  # 22:00 .. 06:00 local is "off hours" (MEDIUM, patient alerted)
+    off_hours_end: int = 6
+    emergency_ttl_minutes: int = 60
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def _split_csv(cls, value: object) -> object:

@@ -1,0 +1,1682 @@
+[
+ {
+  "id": 1,
+  "title": "Knee MRI report",
+  "mime": "text/plain",
+  "text": "MRI right knee without contrast, 2026-06-17. Findings: complex tear of the posterior horn of the medial meniscus with moderate joint effusion. ACL and PCL intact. Read by Dr. Amir Haddad.",
+  "truth": {
+   "body_part": "Knee",
+   "condition": "Orthopedics",
+   "record_type": "Imaging",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-06-17",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 2,
+  "title": "Knee arthroscopy discharge",
+  "mime": "text/plain",
+  "text": "Discharge summary 2026-04-29. Day-case arthroscopic partial medial meniscectomy, right knee, no complications. Discharged with crutches and a physiotherapy referral. Surgeon: Dr. Amir Haddad.",
+  "truth": {
+   "body_part": "Knee",
+   "condition": "Orthopedics",
+   "record_type": "Discharge summary",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-04-29",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 3,
+  "title": "Shoulder physio plan",
+  "mime": "text/plain",
+  "text": "Visit 2026-09-13 with Dr. Omar Siddiqui. Rotator cuff strain, left shoulder. Six-week programme: scapular stabilisation and band work. Mild knee stiffness noted but not treated.",
+  "truth": {
+   "body_part": "Shoulder",
+   "condition": "Orthopedics",
+   "record_type": "Visit note",
+   "doctor": "Dr. Omar Siddiqui",
+   "date_of_service": "2026-09-13",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 4,
+  "title": "Lumbar spine X-ray",
+  "mime": "text/plain",
+  "text": "Record 4 \u00b7 scanned copy\nLumbar spine X-ray, 2026-02-15. Mild degenerative disc narrowing at L4-L5, no fracture. Correlate with sciatica symptoms. Reported by Dr. Elena Vasquez. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Spine",
+   "condition": "Orthopedics",
+   "record_type": "Imaging",
+   "doctor": "Dr. Elena Vasquez",
+   "date_of_service": "2026-02-15",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 5,
+  "title": "Hip replacement follow-up",
+  "mime": "text/plain",
+  "text": "Record 5 \u00b7 scanned copy\nFollow-up 2026-06-14, Dr. Noah Bennett. Six weeks after left hip arthroplasty. Wound healed, range of motion improving, continue physiotherapy. Review in 6 weeks. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Hip",
+   "condition": "Orthopedics",
+   "record_type": "Visit note",
+   "doctor": "Dr. Noah Bennett",
+   "date_of_service": "2026-06-14",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 6,
+  "title": "Wrist fracture X-ray",
+  "mime": "text/plain",
+  "text": "Radiograph of the right wrist 2026-07-16: healed distal radius fracture, cast removed. Dr. Tom\u00e1s Ibarra.",
+  "truth": {
+   "body_part": "Hand",
+   "condition": "Orthopedics",
+   "record_type": "Imaging",
+   "doctor": "Dr. Tom\u00e1s Ibarra",
+   "date_of_service": "2026-07-16",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 7,
+  "title": "Echocardiogram report",
+  "mime": "text/plain",
+  "text": "Transthoracic echocardiogram 2026-02-19. LVEF 58%, mild mitral regurgitation, no pericardial effusion. Cardiology reviewer: Dr. Tom\u00e1s Ibarra. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Heart",
+   "condition": "Cardiology",
+   "record_type": "Imaging",
+   "doctor": "Dr. Tom\u00e1s Ibarra",
+   "date_of_service": "2026-02-19",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 8,
+  "title": "Cardiology consult",
+  "mime": "text/plain",
+  "text": "Record 8 \u00b7 scanned copy\nCardiology consult 2026-06-12 with Dr. Lina Park. Exertional angina, ECG unremarkable at rest. Plan: stress test, start low-dose aspirin. Review in 4 weeks. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Heart",
+   "condition": "Cardiology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Lina Park",
+   "date_of_service": "2026-06-12",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 9,
+  "title": "Lipid panel",
+  "mime": "text/plain",
+  "text": "Lipid panel 2026-02-20: total cholesterol 212 mg/dL, LDL 138 mg/dL, HDL 44 mg/dL, triglycerides 150 mg/dL. Ordered by Dr. Grace Whitfield.",
+  "truth": {
+   "body_part": null,
+   "condition": "General health",
+   "record_type": "Lab result",
+   "doctor": "Dr. Grace Whitfield",
+   "date_of_service": "2026-02-20",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 10,
+  "title": "Comprehensive metabolic panel",
+  "mime": "text/plain",
+  "text": "Comprehensive metabolic panel 2026-08-10: sodium 139 mmol/L, potassium 4.1 mmol/L, glucose 92 mg/dL, creatinine 0.8 mg/dL, ALT 21 U/L. All values within reference range. Dr. Amir Haddad.",
+  "truth": {
+   "body_part": null,
+   "condition": "General health",
+   "record_type": "Lab result",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-08-10",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 11,
+  "title": "Asthma review",
+  "mime": "text/plain",
+  "text": "Record 11 \u00b7 scanned copy\nAsthma review 2026-09-30, Dr. Grace Whitfield. Night-time wheeze twice a week, spirometry FEV1 82% predicted. Plan: step up inhaled steroid, review in 8 weeks. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": "Lungs",
+   "condition": "Pulmonology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Grace Whitfield",
+   "date_of_service": "2026-09-30",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 12,
+  "title": "Chest X-ray",
+  "mime": "text/plain",
+  "text": "Chest X-ray 2026-09-24: lungs clear, no consolidation or effusion, heart size normal. Reported by Dr. Noah Bennett. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Lungs",
+   "condition": "Pulmonology",
+   "record_type": "Imaging",
+   "doctor": "Dr. Noah Bennett",
+   "date_of_service": "2026-09-24",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 13,
+  "title": "Dermatology visit",
+  "mime": "text/plain",
+  "text": "Dermatology visit 2026-01-30 with Dr. Lina Park. Itchy rash on both forearms consistent with eczema. Plan: emollient twice daily, mild topical steroid for one week.",
+  "truth": {
+   "body_part": "Skin",
+   "condition": "Dermatology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Lina Park",
+   "date_of_service": "2026-01-30",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 14,
+  "title": "Mole biopsy result",
+  "mime": "text/plain",
+  "text": "Skin biopsy result 2026-08-12: compound naevus, no malignant features. Reassured. Dermatology, Dr. Amir Haddad. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": "Skin",
+   "condition": "Dermatology",
+   "record_type": "Lab result",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-08-12",
+   "sensitivity": 2
+  }
+ },
+ {
+  "id": 15,
+  "title": "Eye exam",
+  "mime": "text/plain",
+  "text": "Eye examination 2026-08-26, Dr. Amir Haddad. Vision 20/25 both eyes, intraocular pressure normal, early cataract left eye. Review in 12 months.",
+  "truth": {
+   "body_part": "Eyes",
+   "condition": "Ophthalmology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-08-26",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 16,
+  "title": "Colonoscopy report",
+  "mime": "text/plain",
+  "text": "Colonoscopy 2026-06-11 performed by Dr. Grace Whitfield. Two small polyps removed from the sigmoid colon, otherwise normal bowel. Repeat scan in 5 years.",
+  "truth": {
+   "body_part": "Stomach",
+   "condition": "Gastroenterology",
+   "record_type": "Imaging",
+   "doctor": "Dr. Grace Whitfield",
+   "date_of_service": "2026-06-11",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 17,
+  "title": "Reflux follow-up",
+  "mime": "text/plain",
+  "text": "record 17 \u00b7 scanned copy\nfollow-up 2026-08-14 with dr. grace whitfield for reflux (gerd). symptoms controlled on omeprazole 20 mg. plan: continue, trial reduction in 3 months. interpreter not required. consent recorded.",
+  "truth": {
+   "body_part": "Stomach",
+   "condition": "Gastroenterology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Grace Whitfield",
+   "date_of_service": "2026-08-14",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 18,
+  "title": "Kidney function panel",
+  "mime": "text/plain",
+  "text": "Renal panel 2026-08-27: creatinine 1.1 mg/dL, eGFR 71, urea 5.8 mmol/L. Kidney function stable. Nephrology review by Dr. Lina Park. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": "Kidneys",
+   "condition": "Nephrology",
+   "record_type": "Lab result",
+   "doctor": "Dr. Lina Park",
+   "date_of_service": "2026-08-27",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 19,
+  "title": "Migraine clinic note",
+  "mime": "text/plain",
+  "text": "Neurology clinic 2026-05-18, Dr. Marcus Reed. Migraine without aura, four attacks a month. Plan: start propranolol, headache diary, review in 3 months. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": "Brain",
+   "condition": "Neurology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Marcus Reed",
+   "date_of_service": "2026-05-18",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 20,
+  "title": "Head CT after concussion",
+  "mime": "text/plain",
+  "text": "CT scan of the head 2026-08-15 after a concussion: no haemorrhage, no fracture. Reported by Dr. Noah Bennett. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Brain",
+   "condition": "Neurology",
+   "record_type": "Imaging",
+   "doctor": "Dr. Noah Bennett",
+   "date_of_service": "2026-08-15",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 21,
+  "title": "Thyroid function test",
+  "mime": "text/plain",
+  "text": "Thyroid function test 2026-08-27: TSH 6.2 mIU/L, free T4 low-normal. Suggest levothyroxine trial. Ordered by Dr. Tom\u00e1s Ibarra. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Thyroid",
+   "condition": "Endocrinology",
+   "record_type": "Lab result",
+   "doctor": "Dr. Tom\u00e1s Ibarra",
+   "date_of_service": "2026-08-27",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 22,
+  "title": "Dental check-up",
+  "mime": "text/plain",
+  "text": "Dental visit 2026-05-17 with Dr. Priya Nair. Small cavity in the lower left molar filled; gums healthy. Review in 6 months. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": "Teeth",
+   "condition": "Dental",
+   "record_type": "Visit note",
+   "doctor": "Dr. Priya Nair",
+   "date_of_service": "2026-05-17",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 23,
+  "title": "Ear infection visit",
+  "mime": "text/plain",
+  "text": "Visit 2026-02-06, Dr. Noah Bennett. Right ear pain and reduced hearing, otitis media. Plan: amoxicillin 5 days, review if not settled. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": "Ears",
+   "condition": "ENT",
+   "record_type": "Visit note",
+   "doctor": "Dr. Noah Bennett",
+   "date_of_service": "2026-02-06",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 24,
+  "title": "Psychiatry follow-up note",
+  "mime": "text/plain",
+  "text": "record 24 \u00b7 scanned copy\npsychiatry follow-up 2026-08-03 with dr. marcus reed. generalised anxiety disorder, improved sleep on sertraline 50 mg. phq-9 score 6. plan: continue current dose, review in 12 weeks. patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": null,
+   "condition": "Psychiatry",
+   "record_type": "Visit note",
+   "doctor": "Dr. Marcus Reed",
+   "date_of_service": "2026-08-03",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 25,
+  "title": "Therapy session summary",
+  "mime": "text/plain",
+  "text": "Therapy session 2026-02-16. Depressive symptoms improving, GAD-7 down to 8. Continue weekly counselling. Dr. Noah Bennett. Also reports knee pain from running. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": null,
+   "condition": "Psychiatry",
+   "record_type": "Visit note",
+   "doctor": "Dr. Noah Bennett",
+   "date_of_service": "2026-02-16",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 26,
+  "title": "Prescription: sertraline 50 mg",
+  "mime": "text/plain",
+  "text": "Prescription 2026-01-27 by Dr. Omar Siddiqui. Sertraline 50 mg tablet, one daily by mouth, 90-day supply, 1 refill. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": null,
+   "condition": "Psychiatry",
+   "record_type": "Prescription",
+   "doctor": "Dr. Omar Siddiqui",
+   "date_of_service": "2026-01-27",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 27,
+  "title": "Sexual health screen",
+  "mime": "text/plain",
+  "text": "Record 27 \u00b7 scanned copy\nSexual health screen 2026-03-25: HIV antibody negative, chlamydia and gonorrhoea NAAT negative, syphilis serology negative. Ordered by Dr. Tom\u00e1s Ibarra.",
+  "truth": {
+   "body_part": null,
+   "condition": "Sexual health",
+   "record_type": "Lab result",
+   "doctor": "Dr. Tom\u00e1s Ibarra",
+   "date_of_service": "2026-03-25",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 28,
+  "title": "PrEP prescription",
+  "mime": "text/plain",
+  "text": "Prescription 2026-03-15, Dr. Noah Bennett. PrEP (emtricitabine/tenofovir) one tablet daily, 90-day supply. Repeat HIV test in 3 months. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": null,
+   "condition": "Sexual health",
+   "record_type": "Prescription",
+   "doctor": "Dr. Noah Bennett",
+   "date_of_service": "2026-03-15",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 29,
+  "title": "BRCA genetic test",
+  "mime": "text/plain",
+  "text": "Record 29 \u00b7 scanned copy\nGenetic test result 2026-09-20: BRCA1 and BRCA2 sequencing, no pathogenic variant detected. Hereditary risk counselling offered. Dr. Omar Siddiqui. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": null,
+   "condition": "Genetics",
+   "record_type": "Lab result",
+   "doctor": "Dr. Omar Siddiqui",
+   "date_of_service": "2026-09-20",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 30,
+  "title": "Substance use counselling note",
+  "mime": "text/plain",
+  "text": "Visit 2026-06-10 with Dr. Lina Park. Alcohol use disorder, 6 weeks abstinent, attending peer support. Naloxone kit provided. Review in 4 weeks. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": null,
+   "condition": "Substance use",
+   "record_type": "Visit note",
+   "doctor": "Dr. Lina Park",
+   "date_of_service": "2026-06-10",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 31,
+  "title": "Prenatal visit",
+  "mime": "text/plain",
+  "text": "Prenatal visit 2026-04-15, Dr. Priya Nair. 20 weeks pregnant, blood pressure 112/70, anatomy ultrasound normal. Review in 4 weeks. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": null,
+   "condition": "Reproductive health",
+   "record_type": "Visit note",
+   "doctor": "Dr. Priya Nair",
+   "date_of_service": "2026-04-15",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 32,
+  "title": "Contraception prescription",
+  "mime": "text/plain",
+  "text": "Prescription 2026-01-31 by Dr. Amir Haddad. Combined oral contraceptive, one tablet daily, 6-month supply. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": null,
+   "condition": "Reproductive health",
+   "record_type": "Prescription",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-01-31",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 33,
+  "title": "Oncology consult",
+  "mime": "text/plain",
+  "text": "Oncology consult 2026-01-18 with Dr. Elena Vasquez. Stage I lymphoma, biopsy confirmed. Plan: 4 cycles of chemotherapy, repeat CT scan after cycle 2. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": null,
+   "condition": "Oncology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Elena Vasquez",
+   "date_of_service": "2026-01-18",
+   "sensitivity": 2
+  }
+ },
+ {
+  "id": 34,
+  "title": "Diabetes review",
+  "mime": "text/plain",
+  "text": "Diabetes review 2026-06-20, Dr. Noah Bennett. HbA1c 7.1%, on metformin 1000 mg twice daily. Plan: continue, foot check normal, review in 6 months. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": null,
+   "condition": "Endocrinology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Noah Bennett",
+   "date_of_service": "2026-06-20",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 35,
+  "title": "Allergy test results",
+  "mime": "text/plain",
+  "text": "Record 35 \u00b7 scanned copy\nSkin prick testing 2026-04-02: positive for dust mite and cat dander, negative for peanut and shellfish. Allergy clinic, Dr. Omar Siddiqui.",
+  "truth": {
+   "body_part": null,
+   "condition": "Allergy",
+   "record_type": "Lab result",
+   "doctor": "Dr. Omar Siddiqui",
+   "date_of_service": "2026-04-02",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 36,
+  "title": "COVID vaccination record",
+  "mime": "text/plain",
+  "text": "Vaccination record 2026-06-26: COVID-19 booster dose administered, left deltoid, no adverse reaction. Given by Dr. Omar Siddiqui. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": null,
+   "condition": "Infectious disease",
+   "record_type": "Vaccination",
+   "doctor": "Dr. Omar Siddiqui",
+   "date_of_service": "2026-06-26",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 37,
+  "title": "Tetanus booster",
+  "mime": "text/plain",
+  "text": "record 37 \u00b7 scanned copy\ntetanus and diphtheria booster administered 2026-07-28. next due in 10 years. dr. amir haddad. parking validated. next appointment to be booked by reception.",
+  "truth": {
+   "body_part": null,
+   "condition": "Infectious disease",
+   "record_type": "Vaccination",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-07-28",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 38,
+  "title": "Strep throat visit",
+  "mime": "text/plain",
+  "text": "Visit 2026-01-29, Dr. Priya Nair. Sore throat, fever, rapid strep positive. Plan: penicillin 10 days, rest, fluids. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": null,
+   "condition": "Infectious disease",
+   "record_type": "Visit note",
+   "doctor": "Dr. Priya Nair",
+   "date_of_service": "2026-01-29",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 39,
+  "title": "Annual physical",
+  "mime": "text/plain",
+  "text": "Annual physical 2026-03-12 with Dr. Elena Vasquez. Vitals normal, BMI 24, no concerns. Routine bloods ordered. Wellness advice given. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": null,
+   "condition": "General health",
+   "record_type": "Visit note",
+   "doctor": "Dr. Elena Vasquez",
+   "date_of_service": "2026-03-12",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 40,
+  "title": "Orthopedic referral",
+  "mime": "text/plain",
+  "text": "Record 40 \u00b7 scanned copy\nReferral 2026-03-16 from Dr. Priya Nair: second opinion requested on a chronic right knee effusion. Please see attached MRI. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": "Knee",
+   "condition": "Orthopedics",
+   "record_type": "Referral",
+   "doctor": "Dr. Priya Nair",
+   "date_of_service": "2026-03-16",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 41,
+  "title": "Knee MRI report",
+  "mime": "text/plain",
+  "text": "MRI right knee without contrast, 2026-08-05. Findings: complex tear of the posterior horn of the medial meniscus with moderate joint effusion. ACL and PCL intact. Read by Dr. Grace Whitfield. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": "Knee",
+   "condition": "Orthopedics",
+   "record_type": "Imaging",
+   "doctor": "Dr. Grace Whitfield",
+   "date_of_service": "2026-08-05",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 42,
+  "title": "Knee arthroscopy discharge",
+  "mime": "text/plain",
+  "text": "Record 42 \u00b7 scanned copy\nDischarge summary 2026-04-04. Day-case arthroscopic partial medial meniscectomy, right knee, no complications. Discharged with crutches and a physiotherapy referral. Surgeon: Dr. Tom\u00e1s Ibarra. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": "Knee",
+   "condition": "Orthopedics",
+   "record_type": "Discharge summary",
+   "doctor": "Dr. Tom\u00e1s Ibarra",
+   "date_of_service": "2026-04-04",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 43,
+  "title": "Shoulder physio plan",
+  "mime": "text/plain",
+  "text": "Visit 2026-06-01 with Dr. Grace Whitfield. Rotator cuff strain, left shoulder. Six-week programme: scapular stabilisation and band work. Mild knee stiffness noted but not treated. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Shoulder",
+   "condition": "Orthopedics",
+   "record_type": "Visit note",
+   "doctor": "Dr. Grace Whitfield",
+   "date_of_service": "2026-06-01",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 44,
+  "title": "Lumbar spine X-ray",
+  "mime": "text/plain",
+  "text": "Lumbar spine X-ray, 2026-03-07. Mild degenerative disc narrowing at L4-L5, no fracture. Correlate with sciatica symptoms. Reported by Dr. Noah Bennett.",
+  "truth": {
+   "body_part": "Spine",
+   "condition": "Orthopedics",
+   "record_type": "Imaging",
+   "doctor": "Dr. Noah Bennett",
+   "date_of_service": "2026-03-07",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 45,
+  "title": "Hip replacement follow-up",
+  "mime": "text/plain",
+  "text": "Record 45 \u00b7 scanned copy\nFollow-up 2026-04-24, Dr. Amir Haddad. Six weeks after left hip arthroplasty. Wound healed, range of motion improving, continue physiotherapy. Review in 6 weeks. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Hip",
+   "condition": "Orthopedics",
+   "record_type": "Visit note",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-04-24",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 46,
+  "title": "Wrist fracture X-ray",
+  "mime": "text/plain",
+  "text": "Radiograph of the right wrist 2026-08-01: healed distal radius fracture, cast removed. Dr. Tom\u00e1s Ibarra. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": "Hand",
+   "condition": "Orthopedics",
+   "record_type": "Imaging",
+   "doctor": "Dr. Tom\u00e1s Ibarra",
+   "date_of_service": "2026-08-01",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 47,
+  "title": "Echocardiogram report",
+  "mime": "text/plain",
+  "text": "Transthoracic echocardiogram 2026-03-26. LVEF 58%, mild mitral regurgitation, no pericardial effusion. Cardiology reviewer: Dr. Tom\u00e1s Ibarra.",
+  "truth": {
+   "body_part": "Heart",
+   "condition": "Cardiology",
+   "record_type": "Imaging",
+   "doctor": "Dr. Tom\u00e1s Ibarra",
+   "date_of_service": "2026-03-26",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 48,
+  "title": "Cardiology consult",
+  "mime": "text/plain",
+  "text": "Cardiology consult 2026-03-02 with Dr. Marcus Reed. Exertional angina, ECG unremarkable at rest. Plan: stress test, start low-dose aspirin. Review in 4 weeks. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Heart",
+   "condition": "Cardiology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Marcus Reed",
+   "date_of_service": "2026-03-02",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 49,
+  "title": "Lipid panel",
+  "mime": "text/plain",
+  "text": "Lipid panel 2026-04-24: total cholesterol 212 mg/dL, LDL 138 mg/dL, HDL 44 mg/dL, triglycerides 150 mg/dL. Ordered by Dr. Omar Siddiqui.",
+  "truth": {
+   "body_part": null,
+   "condition": "General health",
+   "record_type": "Lab result",
+   "doctor": "Dr. Omar Siddiqui",
+   "date_of_service": "2026-04-24",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 50,
+  "title": "Comprehensive metabolic panel",
+  "mime": "text/plain",
+  "text": "record 50 \u00b7 scanned copy\ncomprehensive metabolic panel 2026-03-13: sodium 139 mmol/l, potassium 4.1 mmol/l, glucose 92 mg/dl, creatinine 0.8 mg/dl, alt 21 u/l. all values within reference range. dr. priya nair. interpreter not required. consent recorded.",
+  "truth": {
+   "body_part": null,
+   "condition": "General health",
+   "record_type": "Lab result",
+   "doctor": "Dr. Priya Nair",
+   "date_of_service": "2026-03-13",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 51,
+  "title": "Asthma review",
+  "mime": "text/plain",
+  "text": "Record 51 \u00b7 scanned copy\nAsthma review 2026-04-02, Dr. Grace Whitfield. Night-time wheeze twice a week, spirometry FEV1 82% predicted. Plan: step up inhaled steroid, review in 8 weeks. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Lungs",
+   "condition": "Pulmonology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Grace Whitfield",
+   "date_of_service": "2026-04-02",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 52,
+  "title": "Chest X-ray",
+  "mime": "text/plain",
+  "text": "Chest X-ray 2026-02-28: lungs clear, no consolidation or effusion, heart size normal. Reported by Dr. Lina Park. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Lungs",
+   "condition": "Pulmonology",
+   "record_type": "Imaging",
+   "doctor": "Dr. Lina Park",
+   "date_of_service": "2026-02-28",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 53,
+  "title": "Dermatology visit",
+  "mime": "text/plain",
+  "text": "Dermatology visit 2026-06-03 with Dr. Amir Haddad. Itchy rash on both forearms consistent with eczema. Plan: emollient twice daily, mild topical steroid for one week. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": "Skin",
+   "condition": "Dermatology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-06-03",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 54,
+  "title": "Mole biopsy result",
+  "mime": "text/plain",
+  "text": "Skin biopsy result 2026-01-12: compound naevus, no malignant features. Reassured. Dermatology, Dr. Amir Haddad. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Skin",
+   "condition": "Dermatology",
+   "record_type": "Lab result",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-01-12",
+   "sensitivity": 2
+  }
+ },
+ {
+  "id": 55,
+  "title": "Eye exam",
+  "mime": "text/plain",
+  "text": "Record 55 \u00b7 scanned copy\nEye examination 2026-02-03, Dr. Elena Vasquez. Vision 20/25 both eyes, intraocular pressure normal, early cataract left eye. Review in 12 months. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Eyes",
+   "condition": "Ophthalmology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Elena Vasquez",
+   "date_of_service": "2026-02-03",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 56,
+  "title": "Colonoscopy report",
+  "mime": "text/plain",
+  "text": "Colonoscopy 2026-07-03 performed by Dr. Amir Haddad. Two small polyps removed from the sigmoid colon, otherwise normal bowel. Repeat scan in 5 years. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": "Stomach",
+   "condition": "Gastroenterology",
+   "record_type": "Imaging",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-07-03",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 57,
+  "title": "Reflux follow-up",
+  "mime": "text/plain",
+  "text": "Follow-up 2026-01-24 with Dr. Omar Siddiqui for reflux (GERD). Symptoms controlled on omeprazole 20 mg. Plan: continue, trial reduction in 3 months. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Stomach",
+   "condition": "Gastroenterology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Omar Siddiqui",
+   "date_of_service": "2026-01-24",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 58,
+  "title": "Kidney function panel",
+  "mime": "text/plain",
+  "text": "Renal panel 2026-08-29: creatinine 1.1 mg/dL, eGFR 71, urea 5.8 mmol/L. Kidney function stable. Nephrology review by Dr. Omar Siddiqui. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Kidneys",
+   "condition": "Nephrology",
+   "record_type": "Lab result",
+   "doctor": "Dr. Omar Siddiqui",
+   "date_of_service": "2026-08-29",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 59,
+  "title": "Migraine clinic note",
+  "mime": "text/plain",
+  "text": "neurology clinic 2026-05-13, dr. priya nair. migraine without aura, four attacks a month. plan: start propranolol, headache diary, review in 3 months. interpreter not required. consent recorded.",
+  "truth": {
+   "body_part": "Brain",
+   "condition": "Neurology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Priya Nair",
+   "date_of_service": "2026-05-13",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 60,
+  "title": "Head CT after concussion",
+  "mime": "text/plain",
+  "text": "Record 60 \u00b7 scanned copy\nCT scan of the head 2026-01-17 after a concussion: no haemorrhage, no fracture. Reported by Dr. Grace Whitfield. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Brain",
+   "condition": "Neurology",
+   "record_type": "Imaging",
+   "doctor": "Dr. Grace Whitfield",
+   "date_of_service": "2026-01-17",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 61,
+  "title": "Thyroid function test",
+  "mime": "text/plain",
+  "text": "Thyroid function test 2026-06-06: TSH 6.2 mIU/L, free T4 low-normal. Suggest levothyroxine trial. Ordered by Dr. Amir Haddad. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Thyroid",
+   "condition": "Endocrinology",
+   "record_type": "Lab result",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-06-06",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 62,
+  "title": "Dental check-up",
+  "mime": "text/plain",
+  "text": "Record 62 \u00b7 scanned copy\nDental visit 2026-06-29 with Dr. Elena Vasquez. Small cavity in the lower left molar filled; gums healthy. Review in 6 months. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Teeth",
+   "condition": "Dental",
+   "record_type": "Visit note",
+   "doctor": "Dr. Elena Vasquez",
+   "date_of_service": "2026-06-29",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 63,
+  "title": "Ear infection visit",
+  "mime": "text/plain",
+  "text": "visit 2026-03-29, dr. amir haddad. right ear pain and reduced hearing, otitis media. plan: amoxicillin 5 days, review if not settled. patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Ears",
+   "condition": "ENT",
+   "record_type": "Visit note",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-03-29",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 64,
+  "title": "Psychiatry follow-up note",
+  "mime": "text/plain",
+  "text": "psychiatry follow-up 2026-07-05 with dr. priya nair. generalised anxiety disorder, improved sleep on sertraline 50 mg. phq-9 score 6. plan: continue current dose, review in 12 weeks. interpreter not required. consent recorded.",
+  "truth": {
+   "body_part": null,
+   "condition": "Psychiatry",
+   "record_type": "Visit note",
+   "doctor": "Dr. Priya Nair",
+   "date_of_service": "2026-07-05",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 65,
+  "title": "Therapy session summary",
+  "mime": "text/plain",
+  "text": "Therapy session 2026-03-10. Depressive symptoms improving, GAD-7 down to 8. Continue weekly counselling. Dr. Omar Siddiqui. Also reports knee pain from running. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": null,
+   "condition": "Psychiatry",
+   "record_type": "Visit note",
+   "doctor": "Dr. Omar Siddiqui",
+   "date_of_service": "2026-03-10",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 66,
+  "title": "Prescription: sertraline 50 mg",
+  "mime": "text/plain",
+  "text": "Prescription 2026-04-27 by Dr. Grace Whitfield. Sertraline 50 mg tablet, one daily by mouth, 90-day supply, 1 refill. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": null,
+   "condition": "Psychiatry",
+   "record_type": "Prescription",
+   "doctor": "Dr. Grace Whitfield",
+   "date_of_service": "2026-04-27",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 67,
+  "title": "Sexual health screen",
+  "mime": "text/plain",
+  "text": "Sexual health screen 2026-07-27: HIV antibody negative, chlamydia and gonorrhoea NAAT negative, syphilis serology negative. Ordered by Dr. Priya Nair. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": null,
+   "condition": "Sexual health",
+   "record_type": "Lab result",
+   "doctor": "Dr. Priya Nair",
+   "date_of_service": "2026-07-27",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 68,
+  "title": "PrEP prescription",
+  "mime": "text/plain",
+  "text": "Prescription 2026-05-26, Dr. Elena Vasquez. PrEP (emtricitabine/tenofovir) one tablet daily, 90-day supply. Repeat HIV test in 3 months. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": null,
+   "condition": "Sexual health",
+   "record_type": "Prescription",
+   "doctor": "Dr. Elena Vasquez",
+   "date_of_service": "2026-05-26",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 69,
+  "title": "BRCA genetic test",
+  "mime": "text/plain",
+  "text": "genetic test result 2026-03-16: brca1 and brca2 sequencing, no pathogenic variant detected. hereditary risk counselling offered. dr. tom\u00e1s ibarra.",
+  "truth": {
+   "body_part": null,
+   "condition": "Genetics",
+   "record_type": "Lab result",
+   "doctor": "Dr. Tom\u00e1s Ibarra",
+   "date_of_service": "2026-03-16",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 70,
+  "title": "Substance use counselling note",
+  "mime": "text/plain",
+  "text": "Visit 2026-01-24 with Dr. Lina Park. Alcohol use disorder, 6 weeks abstinent, attending peer support. Naloxone kit provided. Review in 4 weeks.",
+  "truth": {
+   "body_part": null,
+   "condition": "Substance use",
+   "record_type": "Visit note",
+   "doctor": "Dr. Lina Park",
+   "date_of_service": "2026-01-24",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 71,
+  "title": "Prenatal visit",
+  "mime": "text/plain",
+  "text": "prenatal visit 2026-09-28, dr. tom\u00e1s ibarra. 20 weeks pregnant, blood pressure 112/70, anatomy ultrasound normal. review in 4 weeks. interpreter not required. consent recorded.",
+  "truth": {
+   "body_part": null,
+   "condition": "Reproductive health",
+   "record_type": "Visit note",
+   "doctor": "Dr. Tom\u00e1s Ibarra",
+   "date_of_service": "2026-09-28",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 72,
+  "title": "Contraception prescription",
+  "mime": "text/plain",
+  "text": "Prescription 2026-05-09 by Dr. Elena Vasquez. Combined oral contraceptive, one tablet daily, 6-month supply. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": null,
+   "condition": "Reproductive health",
+   "record_type": "Prescription",
+   "doctor": "Dr. Elena Vasquez",
+   "date_of_service": "2026-05-09",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 73,
+  "title": "Oncology consult",
+  "mime": "text/plain",
+  "text": "Oncology consult 2026-07-28 with Dr. Lina Park. Stage I lymphoma, biopsy confirmed. Plan: 4 cycles of chemotherapy, repeat CT scan after cycle 2. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": null,
+   "condition": "Oncology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Lina Park",
+   "date_of_service": "2026-07-28",
+   "sensitivity": 2
+  }
+ },
+ {
+  "id": 74,
+  "title": "Diabetes review",
+  "mime": "text/plain",
+  "text": "Diabetes review 2026-05-26, Dr. Marcus Reed. HbA1c 7.1%, on metformin 1000 mg twice daily. Plan: continue, foot check normal, review in 6 months. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": null,
+   "condition": "Endocrinology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Marcus Reed",
+   "date_of_service": "2026-05-26",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 75,
+  "title": "Allergy test results",
+  "mime": "text/plain",
+  "text": "Skin prick testing 2026-08-27: positive for dust mite and cat dander, negative for peanut and shellfish. Allergy clinic, Dr. Noah Bennett. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": null,
+   "condition": "Allergy",
+   "record_type": "Lab result",
+   "doctor": "Dr. Noah Bennett",
+   "date_of_service": "2026-08-27",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 76,
+  "title": "COVID vaccination record",
+  "mime": "text/plain",
+  "text": "record 76 \u00b7 scanned copy\nvaccination record 2026-06-13: covid-19 booster dose administered, left deltoid, no adverse reaction. given by dr. omar siddiqui. blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": null,
+   "condition": "Infectious disease",
+   "record_type": "Vaccination",
+   "doctor": "Dr. Omar Siddiqui",
+   "date_of_service": "2026-06-13",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 77,
+  "title": "Tetanus booster",
+  "mime": "text/plain",
+  "text": "Tetanus and diphtheria booster administered 2026-07-05. Next due in 10 years. Dr. Elena Vasquez.",
+  "truth": {
+   "body_part": null,
+   "condition": "Infectious disease",
+   "record_type": "Vaccination",
+   "doctor": "Dr. Elena Vasquez",
+   "date_of_service": "2026-07-05",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 78,
+  "title": "Strep throat visit",
+  "mime": "text/plain",
+  "text": "Record 78 \u00b7 scanned copy\nVisit 2026-04-03, Dr. Elena Vasquez. Sore throat, fever, rapid strep positive. Plan: penicillin 10 days, rest, fluids. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": null,
+   "condition": "Infectious disease",
+   "record_type": "Visit note",
+   "doctor": "Dr. Elena Vasquez",
+   "date_of_service": "2026-04-03",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 79,
+  "title": "Annual physical",
+  "mime": "text/plain",
+  "text": "Annual physical 2026-03-16 with Dr. Sofia Alvarez. Vitals normal, BMI 24, no concerns. Routine bloods ordered. Wellness advice given. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": null,
+   "condition": "General health",
+   "record_type": "Visit note",
+   "doctor": "Dr. Sofia Alvarez",
+   "date_of_service": "2026-03-16",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 80,
+  "title": "Orthopedic referral",
+  "mime": "text/plain",
+  "text": "Referral 2026-04-26 from Dr. Elena Vasquez: second opinion requested on a chronic right knee effusion. Please see attached MRI.",
+  "truth": {
+   "body_part": "Knee",
+   "condition": "Orthopedics",
+   "record_type": "Referral",
+   "doctor": "Dr. Elena Vasquez",
+   "date_of_service": "2026-04-26",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 81,
+  "title": "Knee MRI report",
+  "mime": "text/plain",
+  "text": "MRI right knee without contrast, 2026-07-25. Findings: complex tear of the posterior horn of the medial meniscus with moderate joint effusion. ACL and PCL intact. Read by Dr. Elena Vasquez.",
+  "truth": {
+   "body_part": "Knee",
+   "condition": "Orthopedics",
+   "record_type": "Imaging",
+   "doctor": "Dr. Elena Vasquez",
+   "date_of_service": "2026-07-25",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 82,
+  "title": "Knee arthroscopy discharge",
+  "mime": "text/plain",
+  "text": "Record 82 \u00b7 scanned copy\nDischarge summary 2026-09-22. Day-case arthroscopic partial medial meniscectomy, right knee, no complications. Discharged with crutches and a physiotherapy referral. Surgeon: Dr. Lina Park. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": "Knee",
+   "condition": "Orthopedics",
+   "record_type": "Discharge summary",
+   "doctor": "Dr. Lina Park",
+   "date_of_service": "2026-09-22",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 83,
+  "title": "Shoulder physio plan",
+  "mime": "text/plain",
+  "text": "Visit 2026-05-18 with Dr. Tom\u00e1s Ibarra. Rotator cuff strain, left shoulder. Six-week programme: scapular stabilisation and band work. Mild knee stiffness noted but not treated.",
+  "truth": {
+   "body_part": "Shoulder",
+   "condition": "Orthopedics",
+   "record_type": "Visit note",
+   "doctor": "Dr. Tom\u00e1s Ibarra",
+   "date_of_service": "2026-05-18",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 84,
+  "title": "Lumbar spine X-ray",
+  "mime": "text/plain",
+  "text": "Lumbar spine X-ray, 2026-03-29. Mild degenerative disc narrowing at L4-L5, no fracture. Correlate with sciatica symptoms. Reported by Dr. Marcus Reed. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Spine",
+   "condition": "Orthopedics",
+   "record_type": "Imaging",
+   "doctor": "Dr. Marcus Reed",
+   "date_of_service": "2026-03-29",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 85,
+  "title": "Hip replacement follow-up",
+  "mime": "text/plain",
+  "text": "Follow-up 2026-03-14, Dr. Tom\u00e1s Ibarra. Six weeks after left hip arthroplasty. Wound healed, range of motion improving, continue physiotherapy. Review in 6 weeks. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": "Hip",
+   "condition": "Orthopedics",
+   "record_type": "Visit note",
+   "doctor": "Dr. Tom\u00e1s Ibarra",
+   "date_of_service": "2026-03-14",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 86,
+  "title": "Wrist fracture X-ray",
+  "mime": "text/plain",
+  "text": "Radiograph of the right wrist 2026-09-07: healed distal radius fracture, cast removed. Dr. Elena Vasquez. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Hand",
+   "condition": "Orthopedics",
+   "record_type": "Imaging",
+   "doctor": "Dr. Elena Vasquez",
+   "date_of_service": "2026-09-07",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 87,
+  "title": "Echocardiogram report",
+  "mime": "text/plain",
+  "text": "transthoracic echocardiogram 2026-04-02. lvef 58%, mild mitral regurgitation, no pericardial effusion. cardiology reviewer: dr. priya nair. patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Heart",
+   "condition": "Cardiology",
+   "record_type": "Imaging",
+   "doctor": "Dr. Priya Nair",
+   "date_of_service": "2026-04-02",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 88,
+  "title": "Cardiology consult",
+  "mime": "text/plain",
+  "text": "Record 88 \u00b7 scanned copy\nCardiology consult 2026-03-20 with Dr. Priya Nair. Exertional angina, ECG unremarkable at rest. Plan: stress test, start low-dose aspirin. Review in 4 weeks. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Heart",
+   "condition": "Cardiology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Priya Nair",
+   "date_of_service": "2026-03-20",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 89,
+  "title": "Lipid panel",
+  "mime": "text/plain",
+  "text": "Record 89 \u00b7 scanned copy\nLipid panel 2026-07-15: total cholesterol 212 mg/dL, LDL 138 mg/dL, HDL 44 mg/dL, triglycerides 150 mg/dL. Ordered by Dr. Elena Vasquez. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": null,
+   "condition": "General health",
+   "record_type": "Lab result",
+   "doctor": "Dr. Elena Vasquez",
+   "date_of_service": "2026-07-15",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 90,
+  "title": "Comprehensive metabolic panel",
+  "mime": "text/plain",
+  "text": "Record 90 \u00b7 scanned copy\nComprehensive metabolic panel 2026-05-12: sodium 139 mmol/L, potassium 4.1 mmol/L, glucose 92 mg/dL, creatinine 0.8 mg/dL, ALT 21 U/L. All values within reference range. Dr. Lina Park. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": null,
+   "condition": "General health",
+   "record_type": "Lab result",
+   "doctor": "Dr. Lina Park",
+   "date_of_service": "2026-05-12",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 91,
+  "title": "Asthma review",
+  "mime": "text/plain",
+  "text": "Record 91 \u00b7 scanned copy\nAsthma review 2026-07-19, Dr. Amir Haddad. Night-time wheeze twice a week, spirometry FEV1 82% predicted. Plan: step up inhaled steroid, review in 8 weeks. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Lungs",
+   "condition": "Pulmonology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-07-19",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 92,
+  "title": "Chest X-ray",
+  "mime": "text/plain",
+  "text": "Chest X-ray 2026-09-04: lungs clear, no consolidation or effusion, heart size normal. Reported by Dr. Tom\u00e1s Ibarra. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Lungs",
+   "condition": "Pulmonology",
+   "record_type": "Imaging",
+   "doctor": "Dr. Tom\u00e1s Ibarra",
+   "date_of_service": "2026-09-04",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 93,
+  "title": "Dermatology visit",
+  "mime": "text/plain",
+  "text": "Dermatology visit 2026-07-07 with Dr. Marcus Reed. Itchy rash on both forearms consistent with eczema. Plan: emollient twice daily, mild topical steroid for one week. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": "Skin",
+   "condition": "Dermatology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Marcus Reed",
+   "date_of_service": "2026-07-07",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 94,
+  "title": "Mole biopsy result",
+  "mime": "text/plain",
+  "text": "Record 94 \u00b7 scanned copy\nSkin biopsy result 2026-02-16: compound naevus, no malignant features. Reassured. Dermatology, Dr. Tom\u00e1s Ibarra. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Skin",
+   "condition": "Dermatology",
+   "record_type": "Lab result",
+   "doctor": "Dr. Tom\u00e1s Ibarra",
+   "date_of_service": "2026-02-16",
+   "sensitivity": 2
+  }
+ },
+ {
+  "id": 95,
+  "title": "Eye exam",
+  "mime": "text/plain",
+  "text": "eye examination 2026-05-20, dr. sofia alvarez. vision 20/25 both eyes, intraocular pressure normal, early cataract left eye. review in 12 months. parking validated. next appointment to be booked by reception.",
+  "truth": {
+   "body_part": "Eyes",
+   "condition": "Ophthalmology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Sofia Alvarez",
+   "date_of_service": "2026-05-20",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 96,
+  "title": "Colonoscopy report",
+  "mime": "text/plain",
+  "text": "Colonoscopy 2026-09-21 performed by Dr. Grace Whitfield. Two small polyps removed from the sigmoid colon, otherwise normal bowel. Repeat scan in 5 years. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Stomach",
+   "condition": "Gastroenterology",
+   "record_type": "Imaging",
+   "doctor": "Dr. Grace Whitfield",
+   "date_of_service": "2026-09-21",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 97,
+  "title": "Reflux follow-up",
+  "mime": "text/plain",
+  "text": "Follow-up 2026-07-30 with Dr. Noah Bennett for reflux (GERD). Symptoms controlled on omeprazole 20 mg. Plan: continue, trial reduction in 3 months. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": "Stomach",
+   "condition": "Gastroenterology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Noah Bennett",
+   "date_of_service": "2026-07-30",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 98,
+  "title": "Kidney function panel",
+  "mime": "text/plain",
+  "text": "Renal panel 2026-07-02: creatinine 1.1 mg/dL, eGFR 71, urea 5.8 mmol/L. Kidney function stable. Nephrology review by Dr. Marcus Reed. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Kidneys",
+   "condition": "Nephrology",
+   "record_type": "Lab result",
+   "doctor": "Dr. Marcus Reed",
+   "date_of_service": "2026-07-02",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 99,
+  "title": "Migraine clinic note",
+  "mime": "text/plain",
+  "text": "Record 99 \u00b7 scanned copy\nNeurology clinic 2026-07-19, Dr. Omar Siddiqui. Migraine without aura, four attacks a month. Plan: start propranolol, headache diary, review in 3 months. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": "Brain",
+   "condition": "Neurology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Omar Siddiqui",
+   "date_of_service": "2026-07-19",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 100,
+  "title": "Head CT after concussion",
+  "mime": "text/plain",
+  "text": "Record 100 \u00b7 scanned copy\nCT scan of the head 2026-08-13 after a concussion: no haemorrhage, no fracture. Reported by Dr. Lina Park. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Brain",
+   "condition": "Neurology",
+   "record_type": "Imaging",
+   "doctor": "Dr. Lina Park",
+   "date_of_service": "2026-08-13",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 101,
+  "title": "Thyroid function test",
+  "mime": "text/plain",
+  "text": "Record 101 \u00b7 scanned copy\nThyroid function test 2026-05-19: TSH 6.2 mIU/L, free T4 low-normal. Suggest levothyroxine trial. Ordered by Dr. Noah Bennett. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Thyroid",
+   "condition": "Endocrinology",
+   "record_type": "Lab result",
+   "doctor": "Dr. Noah Bennett",
+   "date_of_service": "2026-05-19",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 102,
+  "title": "Dental check-up",
+  "mime": "text/plain",
+  "text": "Record 102 \u00b7 scanned copy\nDental visit 2026-03-09 with Dr. Lina Park. Small cavity in the lower left molar filled; gums healthy. Review in 6 months.",
+  "truth": {
+   "body_part": "Teeth",
+   "condition": "Dental",
+   "record_type": "Visit note",
+   "doctor": "Dr. Lina Park",
+   "date_of_service": "2026-03-09",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 103,
+  "title": "Ear infection visit",
+  "mime": "text/plain",
+  "text": "Record 103 \u00b7 scanned copy\nVisit 2026-07-28, Dr. Grace Whitfield. Right ear pain and reduced hearing, otitis media. Plan: amoxicillin 5 days, review if not settled. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": "Ears",
+   "condition": "ENT",
+   "record_type": "Visit note",
+   "doctor": "Dr. Grace Whitfield",
+   "date_of_service": "2026-07-28",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 104,
+  "title": "Psychiatry follow-up note",
+  "mime": "text/plain",
+  "text": "Psychiatry follow-up 2026-02-22 with Dr. Tom\u00e1s Ibarra. Generalised anxiety disorder, improved sleep on sertraline 50 mg. PHQ-9 score 6. Plan: continue current dose, review in 12 weeks. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": null,
+   "condition": "Psychiatry",
+   "record_type": "Visit note",
+   "doctor": "Dr. Tom\u00e1s Ibarra",
+   "date_of_service": "2026-02-22",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 105,
+  "title": "Therapy session summary",
+  "mime": "text/plain",
+  "text": "Record 105 \u00b7 scanned copy\nTherapy session 2026-09-26. Depressive symptoms improving, GAD-7 down to 8. Continue weekly counselling. Dr. Priya Nair. Also reports knee pain from running. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": null,
+   "condition": "Psychiatry",
+   "record_type": "Visit note",
+   "doctor": "Dr. Priya Nair",
+   "date_of_service": "2026-09-26",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 106,
+  "title": "Prescription: sertraline 50 mg",
+  "mime": "text/plain",
+  "text": "Prescription 2026-07-28 by Dr. Elena Vasquez. Sertraline 50 mg tablet, one daily by mouth, 90-day supply, 1 refill. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": null,
+   "condition": "Psychiatry",
+   "record_type": "Prescription",
+   "doctor": "Dr. Elena Vasquez",
+   "date_of_service": "2026-07-28",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 107,
+  "title": "Sexual health screen",
+  "mime": "text/plain",
+  "text": "Sexual health screen 2026-03-12: HIV antibody negative, chlamydia and gonorrhoea NAAT negative, syphilis serology negative. Ordered by Dr. Sofia Alvarez.",
+  "truth": {
+   "body_part": null,
+   "condition": "Sexual health",
+   "record_type": "Lab result",
+   "doctor": "Dr. Sofia Alvarez",
+   "date_of_service": "2026-03-12",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 108,
+  "title": "PrEP prescription",
+  "mime": "text/plain",
+  "text": "Prescription 2026-09-09, Dr. Noah Bennett. PrEP (emtricitabine/tenofovir) one tablet daily, 90-day supply. Repeat HIV test in 3 months. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": null,
+   "condition": "Sexual health",
+   "record_type": "Prescription",
+   "doctor": "Dr. Noah Bennett",
+   "date_of_service": "2026-09-09",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 109,
+  "title": "BRCA genetic test",
+  "mime": "text/plain",
+  "text": "Genetic test result 2026-05-22: BRCA1 and BRCA2 sequencing, no pathogenic variant detected. Hereditary risk counselling offered. Dr. Amir Haddad. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": null,
+   "condition": "Genetics",
+   "record_type": "Lab result",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-05-22",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 110,
+  "title": "Substance use counselling note",
+  "mime": "text/plain",
+  "text": "visit 2026-05-26 with dr. priya nair. alcohol use disorder, 6 weeks abstinent, attending peer support. naloxone kit provided. review in 4 weeks. interpreter not required. consent recorded.",
+  "truth": {
+   "body_part": null,
+   "condition": "Substance use",
+   "record_type": "Visit note",
+   "doctor": "Dr. Priya Nair",
+   "date_of_service": "2026-05-26",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 111,
+  "title": "Prenatal visit",
+  "mime": "text/plain",
+  "text": "Prenatal visit 2026-01-10, Dr. Marcus Reed. 20 weeks pregnant, blood pressure 112/70, anatomy ultrasound normal. Review in 4 weeks. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": null,
+   "condition": "Reproductive health",
+   "record_type": "Visit note",
+   "doctor": "Dr. Marcus Reed",
+   "date_of_service": "2026-01-10",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 112,
+  "title": "Contraception prescription",
+  "mime": "text/plain",
+  "text": "Record 112 \u00b7 scanned copy\nPrescription 2026-08-30 by Dr. Marcus Reed. Combined oral contraceptive, one tablet daily, 6-month supply. Parking validated. Next appointment to be booked by reception.",
+  "truth": {
+   "body_part": null,
+   "condition": "Reproductive health",
+   "record_type": "Prescription",
+   "doctor": "Dr. Marcus Reed",
+   "date_of_service": "2026-08-30",
+   "sensitivity": 3
+  }
+ },
+ {
+  "id": 113,
+  "title": "Oncology consult",
+  "mime": "text/plain",
+  "text": "Oncology consult 2026-08-06 with Dr. Amir Haddad. Stage I lymphoma, biopsy confirmed. Plan: 4 cycles of chemotherapy, repeat CT scan after cycle 2.",
+  "truth": {
+   "body_part": null,
+   "condition": "Oncology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-08-06",
+   "sensitivity": 2
+  }
+ },
+ {
+  "id": 114,
+  "title": "Diabetes review",
+  "mime": "text/plain",
+  "text": "record 114 \u00b7 scanned copy\ndiabetes review 2026-01-19, dr. amir haddad. hba1c 7.1%, on metformin 1000 mg twice daily. plan: continue, foot check normal, review in 6 months. blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": null,
+   "condition": "Endocrinology",
+   "record_type": "Visit note",
+   "doctor": "Dr. Amir Haddad",
+   "date_of_service": "2026-01-19",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 115,
+  "title": "Allergy test results",
+  "mime": "text/plain",
+  "text": "Skin prick testing 2026-09-24: positive for dust mite and cat dander, negative for peanut and shellfish. Allergy clinic, Dr. Priya Nair. Blood pressure checked at the front desk, within normal limits.",
+  "truth": {
+   "body_part": null,
+   "condition": "Allergy",
+   "record_type": "Lab result",
+   "doctor": "Dr. Priya Nair",
+   "date_of_service": "2026-09-24",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 116,
+  "title": "COVID vaccination record",
+  "mime": "text/plain",
+  "text": "Vaccination record 2026-06-29: COVID-19 booster dose administered, left deltoid, no adverse reaction. Given by Dr. Tom\u00e1s Ibarra.",
+  "truth": {
+   "body_part": null,
+   "condition": "Infectious disease",
+   "record_type": "Vaccination",
+   "doctor": "Dr. Tom\u00e1s Ibarra",
+   "date_of_service": "2026-06-29",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 117,
+  "title": "Tetanus booster",
+  "mime": "text/plain",
+  "text": "Tetanus and diphtheria booster administered 2026-06-21. Next due in 10 years. Dr. Noah Bennett. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": null,
+   "condition": "Infectious disease",
+   "record_type": "Vaccination",
+   "doctor": "Dr. Noah Bennett",
+   "date_of_service": "2026-06-21",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 118,
+  "title": "Strep throat visit",
+  "mime": "text/plain",
+  "text": "Visit 2026-01-16, Dr. Lina Park. Sore throat, fever, rapid strep positive. Plan: penicillin 10 days, rest, fluids. Interpreter not required. Consent recorded.",
+  "truth": {
+   "body_part": null,
+   "condition": "Infectious disease",
+   "record_type": "Visit note",
+   "doctor": "Dr. Lina Park",
+   "date_of_service": "2026-01-16",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 119,
+  "title": "Annual physical",
+  "mime": "text/plain",
+  "text": "Annual physical 2026-04-16 with Dr. Noah Bennett. Vitals normal, BMI 24, no concerns. Routine bloods ordered. Wellness advice given.",
+  "truth": {
+   "body_part": null,
+   "condition": "General health",
+   "record_type": "Visit note",
+   "doctor": "Dr. Noah Bennett",
+   "date_of_service": "2026-04-16",
+   "sensitivity": 1
+  }
+ },
+ {
+  "id": 120,
+  "title": "Orthopedic referral",
+  "mime": "text/plain",
+  "text": "Record 120 \u00b7 scanned copy\nReferral 2026-06-09 from Dr. Grace Whitfield: second opinion requested on a chronic right knee effusion. Please see attached MRI. Patient also asked about travel vaccinations; deferred.",
+  "truth": {
+   "body_part": "Knee",
+   "condition": "Orthopedics",
+   "record_type": "Referral",
+   "doctor": "Dr. Grace Whitfield",
+   "date_of_service": "2026-06-09",
+   "sensitivity": 1
+  }
+ }
+]

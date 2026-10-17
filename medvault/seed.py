@@ -12,7 +12,7 @@ from datetime import date, timedelta
 
 from sqlmodel import Session, select
 
-from medvault import audit
+from medvault import audit, rules
 from medvault.config import get_settings
 from medvault.db import drop_db, init_db, make_engine
 from medvault.kms import Kms
@@ -20,12 +20,15 @@ from medvault.models import (
     AccessAction,
     AccessOutcome,
     AccessRequest,
+    Alert,
+    AuthSession,
     CareEpisode,
     Grant,
     Hospital,
     Patient,
     Record,
     RecordCategory,
+    RiskLevel,
     Role,
     StaffRole,
     User,
@@ -99,8 +102,15 @@ RECORDS = [
 ]  # fmt: skip
 
 
-def reset_and_seed(engine, kms: Kms) -> dict[str, int]:
-    """Drop everything and load the demo data set. Returns row counts per table."""
+def reset_and_seed(engine, kms: Kms, *, keep_sessions: bool = False) -> dict[str, int]:
+    """Drop everything and load the demo data set. Returns row counts per table.
+
+    ``keep_sessions`` carries the signed-in sessions across the reset (S6 from the demo panel):
+    user ids are stable because the seed is deterministic, so every phone stays signed in."""
+    kept: list[dict] = []
+    if keep_sessions:
+        with Session(engine) as s:
+            kept = [row.model_dump(exclude={"id"}) for row in s.exec(select(AuthSession)).all()]
     drop_db(engine)
     init_db(engine)
     now = utcnow()
@@ -125,6 +135,8 @@ def reset_and_seed(engine, kms: Kms) -> dict[str, int]:
             )
             s.add(users[key])
         s.flush()
+        for row in kept:  # user ids are the same as before the reset
+            s.add(AuthSession(**row))
 
         patients: dict[str, Patient] = {}
         vaults: dict[str, Vault] = {}
@@ -214,6 +226,39 @@ def reset_and_seed(engine, kms: Kms) -> dict[str, int]:
             patient_id=patients["patient"].id,
             record_id=knee_mri.id,
             ts=now - timedelta(hours=5),
+        )
+
+        # Sam Lee looked at Maya's record list late last night: the off-hours rule flagged it
+        # MEDIUM and raised the open alert the Alerts tab shows from the first login (P12).
+        late = (now - timedelta(days=1)).astimezone(rules.local_tz()).replace(hour=23, minute=48)
+        verdict = rules.assess(users["nurse_a"], None, at=late)
+        entry = audit.append(
+            s,
+            action=AccessAction.RECORD_LIST,
+            outcome=AccessOutcome.ALLOWED,
+            summary="Viewed record list",
+            actor=users["nurse_a"],
+            hospital_id=hospitals["HOSP-A"].id,
+            patient_id=patients["patient"].id,
+            risk_level=RiskLevel.MEDIUM,
+            reasons=verdict.reasons,
+            ts=late,
+        )
+        s.add(
+            Alert(
+                patient_id=patients["patient"].id,
+                grant_id=s.exec(select(Grant).where(Grant.patient_id == patients["patient"].id))
+                .one()
+                .id,
+                access_log_id=entry.id,
+                risk_level=RiskLevel.MEDIUM,
+                title="Late-night access to your records",
+                explanation=(
+                    f"{rules.describe(s, users['nurse_a'])}, opened your record list at "
+                    f"{rules.fmt_time(late)}."
+                ),
+                created_at=late,
+            )
         )
 
         # Hospital B has asked Maya for access: drives the approve/deny demo (P9).

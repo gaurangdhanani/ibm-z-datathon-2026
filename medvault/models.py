@@ -67,7 +67,7 @@ class RecordCategory(str, Enum):
 
 class GrantStatus(str, Enum):
     ACTIVE = "active"
-    FROZEN = "frozen"  # detector froze it; patient decides (P9/P12)
+    FROZEN = "frozen"  # the access rules froze it; patient decides (P12)
     REVOKED = "revoked"  # patient revoked it
     TRANSFERRED = "transferred"  # ended by a key swap to another hospital (VLT-6)
 
@@ -94,6 +94,8 @@ class AccessAction(str, Enum):
     REQUEST_CREATE = "request_create"
     REQUEST_DECIDE = "request_decide"
     EMERGENCY_ACCESS = "emergency_access"
+    EMERGENCY_END = "emergency_end"
+    ALERT_DECIDE = "alert_decide"
     AUDIT_VERIFY = "audit_verify"
     DEMO_RESET = "demo_reset"
 
@@ -118,10 +120,13 @@ class AlertStatus(str, Enum):
 
 
 class PatientDecision(str, Enum):
+    """What the patient chose on an alert (VLT-10 / P12). Matches the feature spec's words."""
+
     NONE = "none"
-    KEEP_FROZEN = "keep_frozen"
-    UNFREEZE = "unfreeze"
-    REVOKE = "revoke"
+    RESTORE = "restore"  # HIGH alert: unfreeze the grant
+    KEEP_FROZEN = "keep_frozen"  # HIGH alert: leave it frozen for now
+    LOOKS_FINE = "looks_fine"  # MEDIUM alert: close it
+    FREEZE = "freeze"  # MEDIUM alert: freeze the grant (or end emergency access)
 
 
 # --------------------------------------------------------------------------------------------
@@ -293,7 +298,7 @@ class EmergencyGrant(SQLModel, table=True):
 
 
 class CareEpisode(SQLModel, table=True):
-    """Is this hospital currently treating this patient? A detector feature (DET-2)."""
+    """Is this hospital currently treating this patient? (Seed data; not used by the rules yet.)"""
 
     __tablename__ = "care_episodes"
 
@@ -334,7 +339,10 @@ class AccessLog(SQLModel, table=True):
 
 
 class Alert(SQLModel, table=True):
-    """A plain-language alert for the patient, raised by the detector (DET-5 -> P12)."""
+    """A plain-language alert for the patient, raised by the access rules (RUL-1 -> P12).
+
+    ``access_log_id`` points at the entry that raised it; its ``reasons_json`` is what the UI shows.
+    """
 
     __tablename__ = "alerts"
 

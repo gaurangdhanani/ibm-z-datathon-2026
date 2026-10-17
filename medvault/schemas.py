@@ -196,6 +196,39 @@ class RequestAccessIn(BaseModel):
     reason: str
 
 
+class AlertDecisionIn(BaseModel):
+    decision: Literal["restore", "keep_frozen", "looks_fine", "freeze"]
+
+
+class EmergencyIn(BaseModel):
+    patient_id: int
+    justification: str
+
+
+# ---- demo control (S5 attacker panel, S6 reset) ----------------------------------------------
+
+
+class ScenarioOut(BaseModel):
+    id: str
+    title: str
+    description: str
+    actor: str
+    expected: str
+    ready: bool
+    hint: str | None
+
+
+class ScenarioResult(BaseModel):
+    scenario: str
+    actor: str
+    outcome: AccessOutcome
+    code: str | None
+    message: str
+    summary: str
+    risk_level: RiskLevel
+    reasons: list[Reason]
+
+
 # ---- builders --------------------------------------------------------------------------------
 
 

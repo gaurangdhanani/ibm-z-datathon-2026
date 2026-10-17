@@ -2,9 +2,9 @@ import { NavLink, Navigate, Outlet, useLocation, useNavigate } from "react-route
 import type { ReactNode } from "react";
 
 import { BRAND } from "../lib/brand";
-import { USE_MOCK } from "../lib/data";
 import { STAFF_ROLE_LABEL, useAuth } from "../lib/auth";
 import type { Role } from "../lib/auth";
+import { useLiveEvents } from "../lib/live";
 import { Avatar, Button, FullPage, Spinner } from "./ui";
 
 const NAV: Record<Exclude<Role, "patient">, Array<{ to: string; label: string; end?: boolean }>> = {
@@ -31,23 +31,11 @@ export function RequireRole({ roles, children }: { roles: Role[]; children: Reac
   return <>{children}</>;
 }
 
-/** Badge that keeps mock data from being mistaken for the live system. */
-export function MockDataPill() {
-  if (!USE_MOCK) return null;
-  return (
-    <span
-      title="Running on the browser-side mock (VITE_MOCK_API=true), not the live API"
-      className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-900 ring-1 ring-amber-200"
-    >
-      Mock data
-    </span>
-  );
-}
-
 /** Desktop shell for hospital staff and demo control. Patients get PatientShell. */
 export function AppShell() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  useLiveEvents(user?.role === "staff" ? "/api/hospital/events" : null); // VLT-9
   if (!user || user.role === "patient") return null;
 
   const subtitle =
@@ -77,7 +65,6 @@ export function AppShell() {
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-3 text-sm">
-            <MockDataPill />
             <Avatar name={user.full_name} className="h-9 w-9 text-xs" />
             <div className="leading-tight">
               <div className="font-medium">{user.full_name}</div>

@@ -5,7 +5,7 @@ import { AlertTriangle, Bell, ChevronRight, Clock, Folder, KeyRound, LogOut } fr
 import { BRAND } from "../lib/brand";
 import { patientApi, useResource } from "../lib/data";
 import { useAuth } from "../lib/auth";
-import { MockDataPill } from "./AppShell";
+import { useLiveEvents } from "../lib/live";
 import { Avatar, cx } from "./ui";
 
 const TABS = [
@@ -22,6 +22,7 @@ export function PatientShell() {
   const { pathname } = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const alerts = useResource(() => patientApi.getAlerts(), []);
+  useLiveEvents(user ? "/api/patient/events" : null); // VLT-9: alerts and history update live
   if (!user) return null;
 
   const open = (alerts.data ?? []).filter((a) => a.status === "open");
@@ -34,7 +35,6 @@ export function PatientShell() {
           {BRAND}
         </Link>
         <div className="relative flex items-center gap-2">
-          <MockDataPill />
           <button
             type="button"
             aria-label="Account menu"

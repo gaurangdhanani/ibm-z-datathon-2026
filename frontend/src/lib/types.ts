@@ -1,6 +1,6 @@
 /**
- * Phase 2+ API contract. The live endpoints must return these shapes; until they exist the
- * screens run on lib/mock.ts (see lib/data.ts). Enum strings match medvault/models.py.
+ * API contract: the shapes the FastAPI endpoints return (see medvault/schemas.py). Enum strings
+ * match medvault/models.py.
  */
 
 export type GrantStatus = "active" | "frozen" | "revoked" | "transferred";
@@ -199,6 +199,36 @@ export interface HospitalApi {
   lookupPatient(query: string): Promise<LookupResult[]>;
   requestAccess(patientId: number, reason: string): Promise<HospitalRequest>;
   getRequests(): Promise<HospitalRequest[]>;
+  /** H7 break-glass: physicians and nurses only; time-boxed, logged, the patient is told. */
+  breakGlass(patientId: number, justification: string): Promise<EmergencyInfo>;
+}
+
+/** S5 attacker panel: a rule-based scenario the demo can fire as its persona. */
+export interface Scenario {
+  id: string;
+  title: string;
+  description: string;
+  actor: string;
+  expected: string;
+  ready: boolean;
+  hint: string | null;
+}
+
+export interface ScenarioResult {
+  scenario: string;
+  actor: string;
+  outcome: AccessOutcome;
+  code: string | null;
+  message: string;
+  summary: string;
+  risk_level: RiskLevel;
+  reasons: Reason[];
+}
+
+export interface AdminApi {
+  getScenarios(): Promise<Scenario[]>;
+  runScenario(id: string): Promise<ScenarioResult>;
+  reset(): Promise<{ ok: boolean }>;
 }
 
 export const GROUP_BY_OPTIONS: Array<{ value: GroupBy; label: string }> = [

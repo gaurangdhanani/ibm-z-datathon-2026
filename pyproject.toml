@@ -25,6 +25,7 @@ ignore = ["B008"]  # Depends(...) in defaults is the FastAPI idiom
 
 [tool.ruff.lint.per-file-ignores]
 "medvault/seed.py" = ["E501"]  # tabular demo data reads better unwrapped
+"medvault/vocab.py" = ["E501"]  # word lists and note templates read better unwrapped
 
 [tool.ruff.lint.isort]
 known-first-party = ["medvault", "tests"]

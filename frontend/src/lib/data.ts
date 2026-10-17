@@ -1,16 +1,13 @@
 /**
- * The data layer every screen imports. Live FastAPI endpoints by default (shapes in lib/types.ts);
- * run or build with VITE_MOCK_API=true to use the browser-side mock (lib/mock.ts) instead.
+ * The data layer every screen imports: the live FastAPI endpoints (shapes in lib/types.ts).
+ * Screens stay fresh through the change bus, which the SSE streams feed (lib/live.ts).
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { DependencyList } from "react";
 
 import { api, apiBlob, apiForm } from "./api";
 import { emitChange, subscribe } from "./bus";
-import { mockHospitalApi, mockPatientApi } from "./mock";
-import type { HospitalApi, PatientApi, RecordContent, RecordSummary } from "./types";
-
-export const USE_MOCK = import.meta.env.VITE_MOCK_API === "true";
+import type { AdminApi, HospitalApi, PatientApi, RecordContent, RecordSummary } from "./types";
 
 const post = <T>(path: string, body?: unknown) =>
   api<T>(path, { method: "POST", body: body === undefined ? undefined : JSON.stringify(body) });
@@ -49,6 +46,13 @@ const liveHospitalApi: HospitalApi = {
   lookupPatient: (query) => api(`/api/hospital/patient-lookup?q=${encodeURIComponent(query)}`),
   requestAccess: (patient_id, reason) => post("/api/hospital/request-access", { patient_id, reason }),
   getRequests: () => api("/api/hospital/requests"),
+  breakGlass: (patient_id, justification) => post("/api/hospital/emergency", { patient_id, justification }),
+};
+
+const liveAdminApi: AdminApi = {
+  getScenarios: () => api("/api/admin/scenarios"),
+  runScenario: (id) => post(`/api/admin/scenarios/${id}`),
+  reset: () => post("/api/admin/reset"),
 };
 
 /** Wrap the calls that change state so every open screen refetches afterwards. */
@@ -65,7 +69,7 @@ function notifying<T extends object>(impl: T, mutations: Array<keyof T>): T {
   return out;
 }
 
-export const patientApi = notifying(USE_MOCK ? mockPatientApi : livePatientApi, [
+export const patientApi = notifying(livePatientApi, [
   "uploadRecord",
   "grant",
   "transfer",
@@ -73,7 +77,8 @@ export const patientApi = notifying(USE_MOCK ? mockPatientApi : livePatientApi, 
   "decideAlert",
   "endEmergency",
 ]);
-export const hospitalApi = notifying(USE_MOCK ? mockHospitalApi : liveHospitalApi, ["requestAccess"]);
+export const hospitalApi = notifying(liveHospitalApi, ["requestAccess", "breakGlass"]);
+export const adminApi = notifying(liveAdminApi, ["runScenario", "reset"]);
 
 export interface Resource<T> {
   data: T | undefined;

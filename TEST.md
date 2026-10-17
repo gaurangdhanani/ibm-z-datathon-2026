@@ -24,7 +24,13 @@ make lint
 cd frontend && npm run typecheck
 ```
 
-Expected: `22 passed`, `All checks passed!`, and no TypeScript errors.
+Expected: `34 passed`, `All checks passed!`, and no TypeScript errors.
+
+```bash
+make eval
+```
+
+Expected: mean field accuracy above 0.9 and sensitive-record recall 1.0, written to `reports/eval.json`.
 
 ## 3. Manual click-through (dev mode)
 
@@ -56,7 +62,20 @@ Every patient and hospital screen talks to FastAPI. Start from a fresh seed (`ma
 7. **Request access (H6).** As Dr. Haddad, **Access requests** → search "Daniel" → pick him → a reason of at least 10 characters → **Request access**. The request shows **Pending**. As **Daniel Okafor**, **Keys** shows it; **Deny**, and Riverbend's list flips to **Denied** within a few seconds.
 8. **Tamper check (S3 preview).** With the server running: `sqlite3 data/medvault.db "update access_log set summary='nothing' where id=3"`. Maya's **History** badge turns red: "History tampered at entry #3". `make seed` restores a clean chain.
 
-**Access frozen** (H4) and patient alert decisions (P12) arrive with RUL-1 and VLT-10 in Phase 3.
+## 3c. Phase 3 and 3.5: rules, alerts, live updates, organizer
+
+Use two devices (or two browsers; one browser shares one sign-in): Maya on a phone, the hospital or demo control on the laptop. Start from `make seed`.
+
+1. **Seeded alert (P12).** As Maya, the amber banner "Late-night access to your records" shows on every tab and **Alerts** has the badge **1**. Open **Alerts**: Sam Lee's card, reason "Outside normal hours (11:48 PM)", buttons **Looks fine** and **Freeze access**.
+2. **Attacker panel (S5).** On the laptop sign in as **Demo Control**. Four scenario cards; "Old hospital tries after the key swap" is greyed out with a hint. Fire **Billing clerk opens a psychiatry note**: the result reads **Blocked and frozen · High** with the two reasons.
+3. **Live alert, freeze decision (RUL-1, VLT-9, VLT-10).** Maya's phone, still on Alerts and without a reload, now shows **Unusual access frozen** at the top (HIGH, "Unrelated to the billing clerk role", "Sensitive record (Psychiatry)"). **Keys** shows Northside as **Frozen**. Tap **Restore access** → confirm. The card moves to **Earlier** with "You restored access"; **History → Flagged** shows "Jordan Price · Tried to open Psychiatry follow-up note · Blocked and frozen" and "You · Restored Northside General Hospital's access".
+4. **Access frozen screen (H4).** Fire the clerk scenario again, then sign in as **Jordan Price** and open Maya's records: the amber **Access frozen** panel, no record content, no emergency button. Keep that tab open and restore as Maya: the tab flips back to the record list on its own with **Key active**.
+5. **Off hours (RUL-1).** Fire **Nurse reads a record at 11:48 PM**: **Allowed · Medium**. Maya gets "Unusual access to your records" with **Looks fine** / **Freeze access**. Freeze it: Keys shows Northside frozen; restore from the card.
+6. **Break-glass (VLT-7, H7, P13).** Sign in as **Dr. Amir Haddad** (Riverbend holds no key for Maya) and open http://localhost:5173/hospital/patients/1: the **No key for this patient** panel offers **Request access** and the red **Emergency access** button (Jordan Price never sees it). Type a justification of 10+ characters, **Break the glass**: Maya's records open under a red "Emergency access, no key held" banner. Maya's phone: vault header "Emergency access: Riverbend …", **Alerts** shows the red **Emergency access active** card with the reason given; **End emergency access now** → Dr. Haddad's tab drops back to **No key** without a reload.
+7. **Old hospital after the swap.** As Maya approve Riverbend's request (Keys). The scenario **Old hospital tries after the key swap** becomes ready; fire it: **Denied: access revoked · High**.
+8. **Organizer (ORG-2, P4).** As Maya upload a `.txt` whose text mentions a knee MRI and "Dr. Lina Park": it lands under **Knee** (Body part) and **Dr. Lina Park** (Doctor) immediately with the tags shown. Upload a note mentioning a therapy session: it gets the **Sensitive** badge, and firing the clerk at it (or opening it as Jordan Price) freezes the key.
+9. **Reset (S6).** Demo control → **Reset demo** → confirm. Every device stays signed in; Maya is back at Northside with Riverbend's request pending and one open alert.
+
 
 ## 4. API checks with curl (server-side guards)
 
@@ -117,4 +136,4 @@ If `linuxone_setup.sh` fails on `cryptography`, run `sudo apt-get install python
 make seed
 ```
 
-Drops and reloads every table (hospitals, 8 users, 3 patients, 9 encrypted and tagged records, grants, one pending access request, a valid access-log chain). Sessions are wiped too, so everyone has to sign in again. Also required after changing `MEDVAULT_SECRET_KEY`: the record keys are wrapped under a key derived from it.
+Drops and reloads every table (hospitals, 8 users, 3 patients, 9 encrypted and tagged records, grants, one pending access request, one open alert, a valid access-log chain). Sessions are wiped too, so everyone has to sign in again; the **Reset demo** button on Demo control does the same but keeps everyone signed in. Also required after changing `MEDVAULT_SECRET_KEY`: the record keys are wrapped under a key derived from it.

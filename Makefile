@@ -5,7 +5,7 @@ BIN    := $(VENV)/bin
 HOST   ?= 127.0.0.1
 PORT   ?= 8000
 
-.PHONY: help setup backend frontend dev build serve run seed test lint smoke clean
+.PHONY: help setup backend frontend dev build serve run seed test lint eval smoke clean
 
 help:
 	@echo "make setup    create .venv, install pinned Python deps, npm ci the frontend"
@@ -16,6 +16,7 @@ help:
 	@echo "make seed     wipe and reload the demo data"
 	@echo "make test     run pytest"
 	@echo "make lint     ruff check + format check"
+	@echo "make eval     score the record organizer: reports/synthetic_records.json + reports/eval.json"
 	@echo "make smoke    health + demo login against a running server; prints the DECISIONS.md line"
 
 $(BIN)/python:
@@ -55,6 +56,9 @@ test:
 lint:
 	$(BIN)/ruff check medvault tests
 	$(BIN)/ruff format --check medvault tests
+
+eval:
+	$(BIN)/python -m medvault.organizer_eval
 
 smoke:
 	scripts/smoke.sh http://$(HOST):$(PORT)

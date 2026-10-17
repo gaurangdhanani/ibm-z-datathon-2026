@@ -1,0 +1,36 @@
+{
+ "records": 120,
+ "tagger": "keyword",
+ "accuracy": {
+  "body_part": 1.0,
+  "condition": 1.0,
+  "record_type": 0.992,
+  "doctor": 1.0,
+  "date_of_service": 1.0
+ },
+ "mean_accuracy": 0.998,
+ "sensitive_records": {
+  "tp": 27,
+  "fp": 0,
+  "fn": 0,
+  "tn": 93,
+  "recall": 1.0,
+  "precision": 1.0
+ },
+ "misses": [
+  {
+   "id": 79,
+   "title": "Annual physical",
+   "wrong": {
+    "record_type": {
+     "got": "Vaccination",
+     "want": "Visit note"
+    }
+   },
+   "sensitivity": {
+    "got": 1,
+    "want": 1
+   }
+  }
+ ]
+}

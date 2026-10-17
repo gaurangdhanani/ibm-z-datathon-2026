@@ -1,52 +1,21 @@
-"""Record organizer: keyword tagger and group-by views.
+"""ORG-2 / ORG-4: the in-vault record organizer. The only AI component (see DECISIONS.md).
 
-Stand-in for ORG-2 (tagger) and ORG-4 (group-by API) so the Phase 2 screens show tags from day
-one; those tickets replace the internals, not the signatures. Tags live encrypted under the
-record's DEK (``Record.encrypted_tags``) and are only decrypted inside the broker.
+``extract_text`` pulls text out of a TXT or PDF upload (no OCR for images: the title is all
+we have). ``tag_text`` scores the vocabulary in ``vocab.py`` and returns body part, condition,
+record type, doctor, date of service, labels and a confidence. Tags are stored encrypted under
+the record's DEK (``Record.encrypted_tags``, ORG-3) and only decrypted inside the broker.
+``group_records`` is the group-by API's shape for patients and hospitals (ORG-4).
 """
 
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
+import zlib
 from datetime import datetime
 
 from medvault.models import RecordCategory
 from medvault.schemas import GroupBy, RecordGroup, RecordSummary
-
-
-@dataclass(frozen=True)
-class Term:
-    pattern: re.Pattern
-    label: str
-    body_part: str | None = None
-    condition: str | None = None
-    record_type: str | None = None
-    sensitive: bool = False
-
-
-def _t(regex: str, label: str, **kw) -> Term:
-    return Term(re.compile(regex, re.IGNORECASE), label, **kw)
-
-
-VOCAB = [
-    _t(r"\b(knee|acl|menisc\w*|patella)\b", "Knee", body_part="Knee", condition="Orthopedics"),
-    _t(r"\b(shoulder|rotator cuff)\b", "Shoulder", body_part="Shoulder", condition="Orthopedics"),
-    _t(r"\b(heart|cardi\w*|echo\w*|ecg|ekg)\b", "Heart", body_part="Heart", condition="Cardiology"),
-    _t(r"\b(lungs?|asthma|chest x-?ray)\b", "Lungs", body_part="Lungs", condition="Pulmonology"),
-    _t(r"\b(skin|rash|derma\w*)\b", "Skin", body_part="Skin", condition="Dermatology"),
-    _t(r"\b(psychiatr\w*|anxiety|depress\w*|therapy session|sertraline)\b", "Mental health",
-       condition="Psychiatry", sensitive=True),
-    _t(r"\b(hiv|sti|std)\b", "Sexual health", condition="Sexual health", sensitive=True),
-    _t(r"\b(brca|genetic\w*)\b", "Genetic", condition="Genetics", sensitive=True),
-    _t(r"\b(hba1c|diabet\w*)\b", "Diabetes", condition="Endocrinology"),
-    _t(r"\bmri\b", "MRI", record_type="Imaging"),
-    _t(r"\b(x-?ray|ct scan|ultrasound|imaging)\b", "Imaging", record_type="Imaging"),
-    _t(r"\b(blood|panel|lab|cbc)\b", "Blood test", record_type="Lab result"),
-    _t(r"\b(vaccin\w*|tetanus|immuni[sz]ation)\b", "Vaccination", record_type="Vaccination"),
-    _t(r"\b(prescription|rx)\b", "Prescription", record_type="Prescription"),
-    _t(r"\bdischarge\b", "Discharge", record_type="Discharge summary"),
-]  # fmt: skip
+from medvault.vocab import BODY_PARTS, CONDITIONS, RECORD_TYPES
 
 TYPE_LABEL: dict[RecordCategory, str] = {
     RecordCategory.IMAGING: "Imaging",
@@ -59,52 +28,133 @@ TYPE_LABEL: dict[RecordCategory, str] = {
 CATEGORY_OF = {label: category for category, label in TYPE_LABEL.items()}
 OTHER_GROUP = "Other / Unknown"
 
-_DOCTOR = re.compile(r"\bDr\.?\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)")
-_DATE = re.compile(r"\b(\d{4}-\d{2}-\d{2})\b")
+_DOCTOR = re.compile(r"\bDr\.?\s+([A-Z][\w'-]+(?:\s+[A-Z][\w'-]+)?)")
+_DOCTOR_LOOSE = re.compile(r"\bdr\.?\s+([^\W\d_][\w'-]*(?:\s+[^\W\d_][\w'-]*)?)", re.I)
+_ISO_DATE = re.compile(r"\b(\d{4}-\d{2}-\d{2})\b")
+_US_DATE = re.compile(r"\b(\d{1,2})/(\d{1,2})/(\d{4})\b")
+_PDF_STREAM = re.compile(rb"stream\r?\n(.*?)\r?\nendstream", re.S)
+_PDF_TEXT = re.compile(rb"\((.*?)(?<!\\)\)")
+
+
+def _compile(keywords: list[str]) -> re.Pattern:
+    """Word-start match so stems ("menisc", "depress") hit their inflections; short keywords
+    ("sti", "ct") must also end the word, or "stiffness" would read as a sexually transmitted
+    infection."""
+    parts = [re.escape(k) + (r"(?!\w)" if len(k) <= 4 else "") for k in keywords]
+    return re.compile(r"(?<!\w)(?:" + "|".join(parts) + r")", re.I)
+
+
+_BODY = [(label, specialty, _compile(words)) for label, (specialty, words) in BODY_PARTS.items()]
+_COND = [(label, level, _compile(words)) for label, (level, words) in CONDITIONS.items()]
+_TYPE = [(label, _compile(words)) for label, words in RECORD_TYPES.items()]
+
+
+# ---- text extraction -------------------------------------------------------------------------
+
+
+def pdf_text(data: bytes) -> str:
+    """Text operands of simple PDFs (uncompressed or Flate streams). Enough for typed reports."""
+    out: list[str] = []
+    for m in _PDF_STREAM.finditer(data):
+        raw = m.group(1)
+        try:
+            raw = zlib.decompress(raw)
+        except zlib.error:
+            pass
+        out.extend(s.decode("latin-1") for s in _PDF_TEXT.findall(raw))
+    return " ".join(out)
+
+
+def extract_text(data: bytes, mime: str) -> str:
+    if mime == "text/plain":
+        return data.decode("utf-8", "replace")[:200_000]
+    if mime == "application/pdf":
+        return pdf_text(data)[:200_000]
+    return ""  # images: no OCR in this build; the title still gets tagged
+
+
+# ---- tagger ----------------------------------------------------------------------------------
+
+
+def _score(pattern: re.Pattern, text: str) -> int:
+    """Hits in the whole text, plus hits in the first line (the title) counted again."""
+    head = text.split("\n", 1)[0] if "\n" in text else ""
+    return len(pattern.findall(text)) + len(pattern.findall(head))
+
+
+def _doctor(text: str) -> str | None:
+    """'Dr. Lina Park' from the text; a lower-cased note still yields a title-cased name."""
+    strict = _DOCTOR.search(text)
+    if strict:
+        return f"Dr. {strict.group(1)}"
+    loose = _DOCTOR_LOOSE.search(text)
+    return f"Dr. {loose.group(1).title()}" if loose else None
 
 
 def tag_text(
     text: str, mime: str, *, doctor: str | None = None, date_of_service: str | None = None
 ) -> dict:
-    """Returns ``{"tags": RecordTags-shaped dict, "sensitivity": 1 | 3, "category": category}``.
+    """Returns ``{"tags": RecordTags-shaped dict, "sensitivity": 1 | 2 | 3, "category"}``.
 
+    Scores every vocabulary entry by how often it appears; the best body part wins, the
+    condition is the best of its specialty and the stand-alone conditions, and sensitivity is
+    the highest level of any stand-alone condition that appears at all (ties go to safety).
     ``doctor`` / ``date_of_service`` override what the text says (the uploader, the upload date).
     """
-    hits = [term for term in VOCAB if term.pattern.search(text)]
+    body = sorted(((_score(p, text), label, spec) for label, spec, p in _BODY), reverse=True)
+    cond = sorted(((_score(p, text), label, level) for label, level, p in _COND), reverse=True)
+    kind = sorted(
+        ((_score(p, text), label != "Visit note", label) for label, p in _TYPE), reverse=True
+    )
 
-    def first(field: str) -> str | None:
-        return next((getattr(h, field) for h in hits if getattr(h, field)), None)
+    body_score, body_part, specialty = body[0] if body and body[0][0] else (0, None, None)
+    cond_score, condition_label, _level = cond[0] if cond and cond[0][0] else (0, None, 1)
+    if body_part and body_score < 2 and cond_score > body_score:
+        body_part, specialty = None, None  # a passing mention ("also reports knee pain")
+    condition = condition_label if cond_score > body_score else (specialty or condition_label)
+    sensitivity = max((level for score, _label, level in cond if score), default=1)
 
-    doc = _DOCTOR.search(text)
-    day = _DATE.search(text)
     if mime.startswith("image/"):
         fallback = "Photo"
     elif mime == "application/pdf":
         fallback = "Document"
     else:
         fallback = "Visit note"
-    record_type = first("record_type") or fallback
-    confidence = min(1.0, (len(hits) + (1 if doc else 0)) / 4)
+    record_type = kind[0][2] if kind and kind[0][0] else fallback
+
+    doc = _doctor(text)
+    day = _ISO_DATE.search(text)
+    if day:
+        found_date = day.group(1)
+    elif us := _US_DATE.search(text):
+        found_date = f"{us.group(3)}-{int(us.group(1)):02d}-{int(us.group(2)):02d}"
+    else:
+        found_date = None
+
+    labels = [label for score, label, *_ in sorted(body + cond, reverse=True) if score][:2]
+    if kind and kind[0][0] and kind[0][2] not in labels:
+        labels.append(kind[0][2])
+    total = body_score + cond_score + (kind[0][0] if kind else 0) + (1 if doc else 0)
+    confidence = min(1.0, total / 5)
     if mime.startswith("image/"):
         confidence = min(confidence, 0.3)  # no OCR: the title is all we have
-    labels: list[str] = []
-    for h in hits:
-        if h.label not in labels:
-            labels.append(h.label)
     return {
         "tags": {
-            "body_part": first("body_part"),
-            "condition": first("condition"),
-            "doctor": doctor or (f"Dr. {doc.group(1)}" if doc else None),
+            "body_part": body_part,
+            "condition": condition,
+            "doctor": doctor or doc,
             "record_type": record_type,
-            "date_of_service": date_of_service or (day.group(1) if day else None),
+            "date_of_service": date_of_service or found_date,
             "labels": labels[:3],
             "tagger": "keyword",
             "confidence": round(confidence, 2),
         },
-        "sensitivity": 3 if any(h.sensitive for h in hits) else 1,  # ties go to the higher one
+        "sensitivity": sensitivity,
         "category": CATEGORY_OF.get(record_type, RecordCategory.OTHER),
     }
+
+
+# ---- group-by (ORG-4) ------------------------------------------------------------------------
 
 
 def _group_key(r: RecordSummary, by: GroupBy) -> tuple[str, str] | None:
@@ -123,7 +173,7 @@ def _group_key(r: RecordSummary, by: GroupBy) -> tuple[str, str] | None:
 
 
 def group_records(records: list[RecordSummary], by: GroupBy) -> list[RecordGroup]:
-    """Same output as the frontend mock's groupRecords: 'Just added' first, Other / Unknown last."""
+    """Groups for the vault and hospital views: biggest first, 'Other / Unknown' last."""
     groups: dict[str, RecordGroup] = {}
     other: list[RecordSummary] = []
     organizing = [r for r in records if r.tags is None]

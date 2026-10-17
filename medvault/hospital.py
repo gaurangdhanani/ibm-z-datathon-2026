@@ -1,34 +1,41 @@
-"""VLT-8 hospital endpoints: my patients, record read through the broker, patient lookup, and
-the hospital side of access requests (VLT-5). Every read of a patient's vault is logged."""
+"""VLT-8 hospital endpoints: my patients, record read through the broker, patient lookup, the
+hospital side of access requests (VLT-5), break-glass emergency access (VLT-7) and the hospital's
+live event stream (VLT-9). Every read of a patient's vault is logged."""
 
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy import desc
 from sqlmodel import Session, col, select
 
-from medvault import audit, broker
+from medvault import audit, broker, events, rules
 from medvault.audit import get_write_session
-from medvault.auth import get_session, require_staff
+from medvault.auth import get_session, get_settings_dep, require_staff, require_staff_roles
+from medvault.config import Settings
 from medvault.kms import Kms
 from medvault.models import (
     AccessAction,
     AccessLog,
     AccessOutcome,
     AccessRequest,
+    EmergencyGrant,
     Grant,
     GrantStatus,
     Patient,
     Record,
     RequestStatus,
+    RiskLevel,
+    StaffRole,
     User,
     utcnow,
 )
 from medvault.organizer import group_records
-from medvault.patient import content_response, get_kms
+from medvault.patient import content_response, emergency_info, get_kms
 from medvault.schemas import (
+    EmergencyIn,
+    EmergencyInfo,
     GroupBy,
     HospitalPatient,
     HospitalPatientView,
@@ -40,14 +47,16 @@ from medvault.schemas import (
 )
 
 router = APIRouter(prefix="/api/hospital", tags=["hospital"])
-LIST_LOG_WINDOW = timedelta(
-    minutes=10
-)  # one "Viewed record list" entry per staff member per window
 MIN_REASON = 10
+require_clinician = require_staff_roles(StaffRole.PHYSICIAN, StaffRole.NURSE)
 
 
 def hospital_patient(
-    session: Session, hospital_id: int, patient: Patient, grant: Grant
+    session: Session,
+    hospital_id: int,
+    patient: Patient,
+    grant: Grant | None,
+    emergency: EmergencyGrant | None = None,
 ) -> HospitalPatient:
     who = session.get(User, patient.user_id)
     last = session.exec(
@@ -62,13 +71,19 @@ def hospital_patient(
         )
         .order_by(desc(AccessLog.ts))
     ).first()
+    if grant is None:
+        key_status = "emergency"
+    elif grant.status == GrantStatus.FROZEN:
+        key_status = "frozen"
+    else:
+        key_status = "active"
     return HospitalPatient(
         patient_id=patient.id,
         full_name=who.full_name,
         mrn=patient.mrn,
         date_of_birth=patient.date_of_birth,
-        key_status="frozen" if grant.status == GrantStatus.FROZEN else "active",
-        last_visit=last or grant.granted_at,
+        key_status=key_status,
+        last_visit=last or (grant.granted_at if grant else emergency.created_at),
     )
 
 
@@ -93,18 +108,31 @@ def request_out(session: Session, r: AccessRequest) -> HospitalRequestOut:
 def my_patients(
     q: str = "", user: User = Depends(require_staff), session: Session = Depends(get_session)
 ) -> list[HospitalPatient]:
-    """Patients whose vault this hospital holds a key for (active or frozen)."""
+    """Patients whose vault this hospital holds a key for (active or frozen) or has emergency
+    access to."""
     grants = session.exec(
         select(Grant).where(
             Grant.hospital_id == user.hospital_id,
             col(Grant.status).in_([GrantStatus.ACTIVE, GrantStatus.FROZEN]),
         )
     ).all()
-    needle = q.strip().lower()
     rows = [
         hospital_patient(session, user.hospital_id, session.get(Patient, g.patient_id), g)
         for g in grants
     ]
+    seen = {g.patient_id for g in grants}
+    for e in session.exec(
+        select(EmergencyGrant).where(
+            EmergencyGrant.hospital_id == user.hospital_id,
+            col(EmergencyGrant.revoked_at).is_(None),
+            EmergencyGrant.expires_at > utcnow(),
+        )
+    ).all():
+        if e.patient_id not in seen:
+            seen.add(e.patient_id)
+            patient = session.get(Patient, e.patient_id)
+            rows.append(hospital_patient(session, user.hospital_id, patient, None, e))
+    needle = q.strip().lower()
     rows = [
         p for p in rows if not needle or needle in p.full_name.lower() or needle in p.mrn.lower()
     ]
@@ -123,29 +151,12 @@ def patient_groups(
     if patient is None:
         raise HTTPException(404, "Patient not found")
     vault = broker.vault_of(session, patient.id)
-    grant = broker.check_hospital_access(session, user, vault, "Tried to view record list")
-    recent = session.exec(
-        select(AccessLog.id).where(
-            AccessLog.patient_id == patient.id,
-            AccessLog.actor_user_id == user.id,
-            AccessLog.action == AccessAction.RECORD_LIST,
-            AccessLog.outcome == AccessOutcome.ALLOWED,
-            AccessLog.ts > utcnow() - LIST_LOG_WINDOW,
-        )
-    ).first()
-    if recent is None:
-        audit.append(
-            session,
-            action=AccessAction.RECORD_LIST,
-            outcome=AccessOutcome.ALLOWED,
-            summary="Viewed record list",
-            actor=user,
-            hospital_id=user.hospital_id,
-            patient_id=patient.id,
-        )
-        session.commit()
+    access = broker.check_hospital_access(session, user, vault, "Tried to view record list")
+    broker.log_list_view(session, user, vault, access)
     return HospitalPatientView(
-        patient=hospital_patient(session, user.hospital_id, patient, grant),
+        patient=hospital_patient(
+            session, user.hospital_id, patient, access.grant, access.emergency
+        ),
         groups=group_records(broker.vault_records(session, kms, vault), by),
     )
 
@@ -166,7 +177,7 @@ def record_meta(
 ) -> RecordSummary:
     """Metadata only. A denial is logged; a successful open is logged by the content call."""
     record = _record(session, record_id)
-    vault = broker.authorize_record(session, user, record)
+    vault, _ = broker.authorize_record(session, user, record)
     return broker.record_summary(session, kms, kms.unwrap_vault_key(vault), record)
 
 
@@ -248,6 +259,7 @@ def request_access(
         patient_id=patient.id,
     )
     session.commit()
+    events.publish("request", patient_id=patient.id, hospital_id=user.hospital_id)
     return request_out(session, req)
 
 
@@ -255,10 +267,109 @@ def request_access(
 def my_requests(
     user: User = Depends(require_staff), session: Session = Depends(get_session)
 ) -> list[HospitalRequestOut]:
-    """The frontend polls this every 3 s for status changes (DECISIONS.md, VLT-5)."""
+    """Polled every 3 s by the requests page; the event stream also pokes it (VLT-9)."""
     rows = session.exec(
         select(AccessRequest)
         .where(AccessRequest.hospital_id == user.hospital_id)
         .order_by(desc(AccessRequest.created_at))
     ).all()
     return [request_out(session, r) for r in rows]
+
+
+# ---- break-glass emergency access (VLT-7) ----------------------------------------------------
+
+
+def break_glass(
+    session: Session,
+    user: User,
+    patient: Patient,
+    justification: str,
+    settings: Settings,
+    *,
+    at: datetime | None = None,
+) -> EmergencyGrant:
+    """Time-boxed access without a key. Always logged, always MEDIUM, the patient is told at once.
+    Idempotent: a still-live emergency grant from this hospital is returned as is."""
+    justification = justification.strip()
+    if len(justification) < MIN_REASON:
+        raise HTTPException(422, f"Give a justification of at least {MIN_REASON} characters.")
+    holder = broker.current_holder(session, patient.id)
+    if holder and holder.hospital_id == user.hospital_id:
+        if holder.status == GrantStatus.FROZEN:  # a patient's freeze cannot be broken through
+            detail = {
+                "code": "access_frozen",
+                "message": "The patient froze your hospital's access. Emergency access is not "
+                "available until they restore it.",
+            }
+            raise HTTPException(409, detail)
+        detail = {"code": "already_granted", "message": "Your hospital already holds this key."}
+        raise HTTPException(409, detail)
+    existing = broker.active_emergency(session, patient.id, user.hospital_id)
+    if existing is not None:
+        return existing
+    now = at or utcnow()
+    e = EmergencyGrant(
+        patient_id=patient.id,
+        hospital_id=user.hospital_id,
+        staff_user_id=user.id,
+        justification=justification[:500],
+        created_at=utcnow(),
+        expires_at=utcnow() + timedelta(minutes=settings.emergency_ttl_minutes),
+        patient_notified=True,
+    )
+    session.add(e)
+    session.flush()
+    verdict = rules.assess(user, None, emergency=True, at=now, settings=settings)
+    entry = audit.append(
+        session,
+        action=AccessAction.EMERGENCY_ACCESS,
+        outcome=AccessOutcome.ALLOWED,
+        summary="Used emergency access to your vault",
+        actor=user,
+        hospital_id=user.hospital_id,
+        patient_id=patient.id,
+        reason=justification[:500],
+        risk_level=RiskLevel.MEDIUM,
+        reasons=verdict.reasons,
+    )
+    rules.raise_alert(
+        session,
+        patient_id=patient.id,
+        grant_id=None,
+        entry=entry,
+        risk=RiskLevel.MEDIUM,
+        title="Emergency access to your records",
+        explanation=(
+            f"{rules.describe(session, user)}, used emergency access. "
+            f'Reason given: "{justification}". '
+            f"It ends at {rules.fmt_time(e.expires_at, settings)} unless you end it sooner."
+        ),
+    )
+    session.commit()
+    events.publish("emergency", patient_id=patient.id, hospital_id=user.hospital_id)
+    return e
+
+
+@router.post("/emergency", response_model=EmergencyInfo, status_code=201)
+def emergency_access(
+    body: EmergencyIn,
+    user: User = Depends(require_clinician),
+    session: Session = Depends(get_write_session),
+    settings: Settings = Depends(get_settings_dep),
+) -> EmergencyInfo:
+    """H7: physicians and nurses only (separation of duties); clerks get 403."""
+    patient = session.get(Patient, body.patient_id)
+    if patient is None:
+        raise HTTPException(404, "Patient not found")
+    return emergency_info(
+        session, break_glass(session, user, patient, body.justification, settings)
+    )
+
+
+@router.get("/events")
+async def hospital_events(request: Request, user: User = Depends(require_staff)):  # noqa: ANN201
+    """VLT-9: Server-Sent Events for this hospital (grants, requests, freezes, resets)."""
+    hospital_id = user.hospital_id
+    return events.stream_response(
+        request, lambda e: e.kind == "reset" or e.hospital_id == hospital_id
+    )

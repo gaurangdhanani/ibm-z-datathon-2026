@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
+import { useNavigate } from "react-router";
 import { Search } from "lucide-react";
 
 import {
@@ -18,6 +19,7 @@ import {
 import { hospitalApi, usePolling, useResource } from "../../lib/data";
 import { formatWhen } from "../../lib/format";
 import type { LookupResult, RequestStatus } from "../../lib/types";
+import { BreakGlassButton } from "./BreakGlass";
 
 const STATUS: Record<RequestStatus, { label: string; status: "pending" | "active" | "revoked" | "neutral" }> = {
   pending: { label: "Pending", status: "pending" },
@@ -30,6 +32,7 @@ const MIN_REASON = 10;
 
 /** H6: find a patient, ask for access with a reason; status updates while the page is open. */
 export default function RequestsPage() {
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [debounced, setDebounced] = useState("");
   const [selected, setSelected] = useState<LookupResult | null>(null);
@@ -127,6 +130,16 @@ export default function RequestsPage() {
             <Button type="submit" disabled={!selected || reasonShort || busy}>
               {busy ? "Sending…" : "Request access"}
             </Button>
+            {selected && (
+              <div className="flex flex-wrap items-center gap-3 border-t border-sage-200 pt-3 text-sm text-ink/70">
+                <span>Can't wait for the patient?</span>
+                <BreakGlassButton
+                  patientId={selected.patient_id}
+                  patientName={selected.full_name}
+                  onDone={() => navigate(`/hospital/patients/${selected.patient_id}`)}
+                />
+              </div>
+            )}
           </form>
         </Card>
 

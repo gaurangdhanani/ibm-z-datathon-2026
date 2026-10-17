@@ -14,7 +14,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from sqlalchemy import text
 from starlette.datastructures import MutableHeaders
 
-from medvault import __version__, audit, auth, hospital, patient
+from medvault import __version__, admin, audit, auth, hospital, patient
 from medvault.config import DEFAULT_SECRET_KEY, Settings, get_settings
 from medvault.db import init_db, make_engine
 from medvault.kms import Kms
@@ -143,6 +143,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(patient.hospitals_router)
     app.include_router(patient.router)
     app.include_router(hospital.router)
+    app.include_router(admin.router)
     mount_spa(app, settings.static_path)
     return app
 

@@ -12,7 +12,7 @@ import hashlib
 import json
 import threading
 from collections.abc import Iterable, Iterator
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 
 from fastapi import APIRouter, Depends, Request
@@ -68,7 +68,7 @@ def append(
     """Append one chained entry (flushed, not committed: the caller's transaction owns it)."""
     last = session.exec(select(AccessLog).order_by(desc(AccessLog.id)).limit(1)).first()
     entry = AccessLog(
-        ts=ts or utcnow(),
+        ts=(ts or utcnow()).astimezone(timezone.utc),
         actor_user_id=actor.id if actor else None,
         hospital_id=hospital_id,
         patient_id=patient_id,
