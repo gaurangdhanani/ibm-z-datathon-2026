@@ -10,12 +10,12 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy import desc
 from sqlmodel import Session, col, select
 
-from medvault import audit, broker, events, rules
-from medvault.audit import get_write_session
-from medvault.auth import get_session, get_settings_dep, require_staff, require_staff_roles
-from medvault.config import Settings
-from medvault.kms import Kms
-from medvault.models import (
+from onetrace import audit, broker, events, rules
+from onetrace.audit import get_write_session
+from onetrace.auth import get_session, get_settings_dep, require_staff, require_staff_roles
+from onetrace.config import Settings
+from onetrace.kms import Kms
+from onetrace.models import (
     AccessAction,
     AccessLog,
     AccessOutcome,
@@ -31,9 +31,9 @@ from medvault.models import (
     User,
     utcnow,
 )
-from medvault.organizer import group_records
-from medvault.patient import content_response, emergency_info, get_kms
-from medvault.schemas import (
+from onetrace.organizer import group_records
+from onetrace.patient import content_response, emergency_info, get_kms
+from onetrace.schemas import (
     EmergencyIn,
     EmergencyInfo,
     GroupBy,

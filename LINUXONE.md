@@ -1,6 +1,6 @@
 # LinuxONE, first time: from zero to the demo on a phone
 
-What you end up with: an IBM LinuxONE virtual server (s390x, Ubuntu) that runs MedVault and serves it over HTTPS at a public URL, plus `reports/bench-s390x.json` for the Dashboard. Budget 45 minutes, most of it waiting. Commands marked **laptop** run in your repo checkout on the Mac; commands marked **VM** run in the SSH session.
+What you end up with: an IBM LinuxONE virtual server (s390x, Ubuntu) that runs OneTrace and serves it over HTTPS at a public URL, plus `reports/bench-s390x.json` for the Dashboard. Budget 45 minutes, most of it waiting. Commands marked **laptop** run in your repo checkout on the Mac; commands marked **VM** run in the SSH session.
 
 Only Python runs on the VM. The frontend is built on the laptop and copied over as `frontend/dist`; FastAPI serves it.
 
@@ -14,8 +14,8 @@ Only Python runs on the VM. The frontend is built on the laptop and copied over 
 The portal is a small OpenStack dashboard; menu names below may differ slightly.
 
 1. **Service Catalog → Virtual Servers → Manage Instances → Create**.
-2. **Instance name:** `medvault`. **Image:** the newest Ubuntu LTS offered (22.04 or 24.04; the setup script uses `apt`). **Flavor:** the default medium one (2 vCPU, 4 GB) is plenty.
-3. **SSH key:** choose **Create a new key pair**, name it `medvault`, and the browser downloads `medvault.pem`. The portal cannot show the private key again, so keep the file. (Or **Upload** your existing `~/.ssh/id_ed25519.pub` and skip the `.pem` steps.)
+2. **Instance name:** `onetrace`. **Image:** the newest Ubuntu LTS offered (22.04 or 24.04; the setup script uses `apt`). **Flavor:** the default medium one (2 vCPU, 4 GB) is plenty.
+3. **SSH key:** choose **Create a new key pair**, name it `onetrace`, and the browser downloads `onetrace.pem`. The portal cannot show the private key again, so keep the file. (Or **Upload** your existing `~/.ssh/id_ed25519.pub` and skip the `.pem` steps.)
 4. **Create**, then wait until the status is **ACTIVE** (one to three minutes) and copy the **public IP** (usually `148.100.x.x`). Below it is written as `LINUXONE_IP`.
 
 ## 3. Connect (laptop)
@@ -23,13 +23,13 @@ The portal is a small OpenStack dashboard; menu names below may differ slightly.
 Move the key somewhere safe and lock its permissions, or `ssh` refuses it:
 
 ```bash
-mkdir -p ~/.ssh && mv ~/Downloads/medvault.pem ~/.ssh/medvault.pem && chmod 400 ~/.ssh/medvault.pem
+mkdir -p ~/.ssh && mv ~/Downloads/onetrace.pem ~/.ssh/onetrace.pem && chmod 400 ~/.ssh/onetrace.pem
 ```
 
 The login user on every Community Cloud image is `linux1`, with passwordless `sudo`:
 
 ```bash
-ssh -i ~/.ssh/medvault.pem linux1@LINUXONE_IP
+ssh -i ~/.ssh/onetrace.pem linux1@LINUXONE_IP
 ```
 
 Type `yes` at the host-key prompt. You are on the mainframe when this prints `s390x`:
@@ -44,7 +44,7 @@ Optional, saves typing for the rest of the weekend: add this to `~/.ssh/config` 
 Host linuxone
   HostName LINUXONE_IP
   User linux1
-  IdentityFile ~/.ssh/medvault.pem
+  IdentityFile ~/.ssh/onetrace.pem
 ```
 
 ## 4. Copy the repo over (laptop)
@@ -58,7 +58,7 @@ make build
 Copy everything except the heavy local folders (`frontend/dist` is included):
 
 ```bash
-rsync -a --exclude .venv --exclude node_modules --exclude data --exclude .git -e "ssh -i ~/.ssh/medvault.pem" ./ linux1@LINUXONE_IP:~/ibm-z/
+rsync -a --exclude .venv --exclude node_modules --exclude data --exclude .git -e "ssh -i ~/.ssh/onetrace.pem" ./ linux1@LINUXONE_IP:~/ibm-z/
 ```
 
 Re-run this same command after every code change.
@@ -108,7 +108,7 @@ make bench
 That writes `reports/bench-arm64.json`. Copy the VM's file back and commit both:
 
 ```bash
-scp -i ~/.ssh/medvault.pem linux1@LINUXONE_IP:~/ibm-z/reports/bench-s390x.json reports/
+scp -i ~/.ssh/onetrace.pem linux1@LINUXONE_IP:~/ibm-z/reports/bench-s390x.json reports/
 ```
 
 Sign in as **Demo Control → Dashboard** on either machine to see them side by side (re-run the `rsync` so the VM has the laptop file too).
@@ -121,9 +121,9 @@ cd ~/ibm-z && scripts/linuxone_https.sh
 
 What it does, once, idempotently:
 
-- writes production settings to `.env` (`MEDVAULT_ENV=prod`, a random `MEDVAULT_SECRET_KEY`, demo personas on) and re-seeds the demo data under the new key;
+- writes production settings to `.env` (`ONETRACE_ENV=prod`, a random `ONETRACE_SECRET_KEY`, demo personas on) and re-seeds the demo data under the new key;
 - installs Caddy (one static binary, built for s390x) and a `Caddyfile` that reverse-proxies to the app and fetches a Let's Encrypt certificate for `148-100-x-y.sslip.io` (sslip.io turns any IP into a DNS name, so no domain is needed);
-- installs two systemd services, `medvault` (uvicorn on 127.0.0.1:8000) and `caddy` (ports 80 and 443), enabled at boot;
+- installs two systemd services, `onetrace` (uvicorn on 127.0.0.1:8000) and `caddy` (ports 80 and 443), enabled at boot;
 - waits until `https://…/api/health` answers and prints the URL.
 
 Open that URL on a phone and sign in as Maya Chen; open it on the laptop as Demo Control; fire a scenario. If you own a domain, point an A record at the IP and run `scripts/linuxone_https.sh demo.yourdomain.com` instead.
@@ -132,19 +132,19 @@ Open that URL on a phone and sign in as Maya Chen; open it on the laptop as Demo
 
 | Want | Run |
 | --- | --- |
-| Deploy new code | laptop: `make build` + the `rsync`; VM: `sudo systemctl restart medvault` |
-| Watch logs | `sudo journalctl -u medvault -f` (app) · `sudo journalctl -u caddy -f` (HTTPS) |
-| Service status | `systemctl status medvault caddy` |
-| Reset demo data | **Demo Control → Reset demo**, or `make seed && sudo systemctl restart medvault` |
-| Stop everything | `sudo systemctl stop caddy medvault` |
+| Deploy new code | laptop: `make build` + the `rsync`; VM: `sudo systemctl restart onetrace` |
+| Watch logs | `sudo journalctl -u onetrace -f` (app) · `sudo journalctl -u caddy -f` (HTTPS) |
+| Service status | `systemctl status onetrace caddy` |
+| Reset demo data | **Demo Control → Reset demo**, or `make seed && sudo systemctl restart onetrace` |
+| Stop everything | `sudo systemctl stop caddy onetrace` |
 | Tests on s390x | `make test` |
 
 ## Troubleshooting
 
 - **`Permission denied (publickey)`**: wrong user or key. The user is `linux1`; the key is the `.pem` downloaded for *this* instance, with `chmod 400`.
-- **`curl http://LINUXONE_IP:8000` times out but `ssh` works**: something blocks inbound traffic. On the VM check `sudo ufw status` (the script opens 80 and 443 if `ufw` is active). If the Community Cloud itself blocks the port, ask the organizers; a laptop-only fallback is an SSH tunnel, `ssh -i ~/.ssh/medvault.pem -L 8000:127.0.0.1:8000 linux1@LINUXONE_IP`, then http://localhost:8000 on the laptop (phones cannot use this).
+- **`curl http://LINUXONE_IP:8000` times out but `ssh` works**: something blocks inbound traffic. On the VM check `sudo ufw status` (the script opens 80 and 443 if `ufw` is active). If the Community Cloud itself blocks the port, ask the organizers; a laptop-only fallback is an SSH tunnel, `ssh -i ~/.ssh/onetrace.pem -L 8000:127.0.0.1:8000 linux1@LINUXONE_IP`, then http://localhost:8000 on the laptop (phones cannot use this).
 - **`linuxone_https.sh` ends with "Not reachable yet"**: `sudo journalctl -u caddy -n 50`. Usually ports 80/443 are not reachable from the internet, or Let's Encrypt rate-limited the name. Fallback: add `tls internal` as the first line inside the site block of `/etc/caddy/Caddyfile`, then `sudo systemctl restart caddy`; phones show a certificate warning once and then work.
 - **Sign-in does nothing on `http://LINUXONE_IP:8000` after step 7**: production mode sets Secure cookies, and the app now listens on localhost only. Use the `https://` URL.
-- **`make run` says the address is in use**: the `medvault` service owns port 8000 now; use `sudo systemctl restart medvault`.
+- **`make run` says the address is in use**: the `onetrace` service owns port 8000 now; use `sudo systemctl restart onetrace`.
 - **`apt` is slow**: s390x packages come from `ports.ubuntu.com`; the first `apt-get update` can take a few minutes.
-- **Off-hours rule fires at odd times**: the rules judge time in `MEDVAULT_TIMEZONE` (America/Chicago), not the VM clock, so this is expected to match Dallas.
+- **Off-hours rule fires at odd times**: the rules judge time in `ONETRACE_TIMEZONE` (America/Chicago), not the VM clock, so this is expected to match Dallas.

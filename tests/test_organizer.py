@@ -9,9 +9,9 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from medvault.config import REPO_ROOT
-from medvault.organizer import extract_text, tag_text
-from medvault.organizer_eval import evaluate, generate
+from onetrace.config import REPO_ROOT
+from onetrace.organizer import extract_text, tag_text
+from onetrace.organizer_eval import evaluate, generate
 from tests.conftest import demo_login
 
 MAYA = 1

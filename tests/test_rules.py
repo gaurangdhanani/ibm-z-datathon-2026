@@ -10,9 +10,9 @@ from zoneinfo import ZoneInfo
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
-from medvault import events, rules
-from medvault.config import Settings
-from medvault.models import Grant, Record, StaffRole, User
+from onetrace import events, rules
+from onetrace.config import Settings
+from onetrace.models import Grant, Record, StaffRole, User
 from tests.conftest import demo_login
 
 MAYA = 1

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # FND-8: serve the live demo from the LinuxONE VM over HTTPS, as two systemd services:
-#   medvault   uvicorn on 127.0.0.1:8000 (API + frontend/dist), restarts on failure, starts on boot
+#   onetrace   uvicorn on 127.0.0.1:8000 (API + frontend/dist), restarts on failure, starts on boot
 #   caddy      reverse proxy on :80 and :443 with an automatic Let's Encrypt certificate
 #
 # Run ON THE VM, from the repo root, after scripts/linuxone_setup.sh and with frontend/dist present:
@@ -27,13 +27,13 @@ echo "== $REPO -> https://$DOMAIN  ($ARCH, public IP $IP)"
 
 # 1. Production settings: Secure cookies, no CORS, no /api/docs; the demo personas stay on.
 #    A fresh secret re-derives the KMS master key, so the demo data is re-seeded under it.
-if ! grep -qs '^MEDVAULT_SECRET_KEY=' .env; then
+if ! grep -qs '^ONETRACE_SECRET_KEY=' .env; then
   {
-    echo "MEDVAULT_ENV=prod"
-    echo "MEDVAULT_DEMO_MODE=true"
-    echo "MEDVAULT_SECRET_KEY=$(python3 -c 'import secrets; print(secrets.token_urlsafe(48))')"
+    echo "ONETRACE_ENV=prod"
+    echo "ONETRACE_DEMO_MODE=true"
+    echo "ONETRACE_SECRET_KEY=$(python3 -c 'import secrets; print(secrets.token_urlsafe(48))')"
   } >> .env
-  .venv/bin/python -m medvault.seed
+  .venv/bin/python -m onetrace.seed
 fi
 
 # 2. Caddy: one static binary from the official download API (built for s390x as well).
@@ -53,15 +53,15 @@ $DOMAIN {
 EOF
 
 # 3. systemd units
-sudo tee /etc/systemd/system/medvault.service >/dev/null <<EOF
+sudo tee /etc/systemd/system/onetrace.service >/dev/null <<EOF
 [Unit]
-Description=MedVault (FastAPI + built frontend)
+Description=OneTrace (FastAPI + built frontend)
 After=network-online.target
 
 [Service]
 User=$RUN_AS
 WorkingDirectory=$REPO
-ExecStart=$REPO/.venv/bin/uvicorn medvault.main:app --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips=127.0.0.1
+ExecStart=$REPO/.venv/bin/uvicorn onetrace.main:app --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips=127.0.0.1
 Restart=on-failure
 
 [Install]
@@ -69,7 +69,7 @@ WantedBy=multi-user.target
 EOF
 sudo tee /etc/systemd/system/caddy.service >/dev/null <<'EOF'
 [Unit]
-Description=Caddy (HTTPS reverse proxy for MedVault)
+Description=Caddy (HTTPS reverse proxy for OneTrace)
 After=network-online.target
 
 [Service]
@@ -87,20 +87,20 @@ if command -v ufw >/dev/null && sudo ufw status 2>/dev/null | grep -q '^Status: 
   sudo ufw allow 80/tcp && sudo ufw allow 443/tcp
 fi
 sudo systemctl daemon-reload
-sudo systemctl enable medvault caddy >/dev/null
-sudo systemctl restart medvault caddy
+sudo systemctl enable onetrace caddy >/dev/null
+sudo systemctl restart onetrace caddy
 
 echo "== waiting for the certificate (Let's Encrypt, usually under a minute)"
 for _ in $(seq 1 45); do
   if curl -fsS --max-time 5 "https://$DOMAIN/api/health" >/dev/null 2>&1; then
     echo
-    echo "Live: https://$DOMAIN   (open it on your phone; every demo password is medvault-demo)"
+    echo "Live: https://$DOMAIN   (open it on your phone; every demo password is onetrace-demo)"
     curl -fsS "https://$DOMAIN/api/health"
     echo
     exit 0
   fi
   sleep 2
 done
-echo "Not reachable yet. Look at:  sudo journalctl -u caddy -n 50    and    sudo journalctl -u medvault -n 50"
+echo "Not reachable yet. Look at:  sudo journalctl -u caddy -n 50    and    sudo journalctl -u onetrace -n 50"
 echo "If ports 80/443 are blocked, add 'tls internal' inside the site block of /etc/caddy/Caddyfile and restart caddy."
 exit 1

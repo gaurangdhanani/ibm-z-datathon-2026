@@ -14,9 +14,9 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel
 from sqlmodel import Session, select
 
-from medvault.config import Settings
-from medvault.models import AuthSession, Hospital, Patient, Role, StaffRole, User, utcnow
-from medvault.security import hash_password, hash_token, new_session_token, verify_password
+from onetrace.config import Settings
+from onetrace.models import AuthSession, Hospital, Patient, Role, StaffRole, User, utcnow
+from onetrace.security import hash_password, hash_token, new_session_token, verify_password
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 _DUMMY_HASH = hash_password("not-a-real-password")  # keeps bad-email and bad-password timing alike
@@ -199,7 +199,7 @@ def personas(
     session: Session = Depends(get_session), settings: Settings = Depends(get_settings_dep)
 ) -> list[PersonaOut]:
     """Demo accounts for the one-click login page (empty when demo mode is off)."""
-    from medvault.seed import PERSONA_DESCRIPTIONS
+    from onetrace.seed import PERSONA_DESCRIPTIONS
 
     if not settings.demo_mode:
         return []

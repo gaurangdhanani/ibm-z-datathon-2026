@@ -14,13 +14,13 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from sqlalchemy import text
 from starlette.datastructures import MutableHeaders
 
-from medvault import __version__, admin, audit, auth, hospital, patient
-from medvault.config import DEFAULT_SECRET_KEY, Settings, get_settings
-from medvault.db import init_db, make_engine
-from medvault.kms import Kms
-from medvault.seed import seed_if_empty
+from onetrace import __version__, admin, audit, auth, hospital, patient
+from onetrace.config import DEFAULT_SECRET_KEY, Settings, get_settings
+from onetrace.db import init_db, make_engine
+from onetrace.kms import Kms
+from onetrace.seed import seed_if_empty
 
-log = logging.getLogger("medvault")
+log = logging.getLogger("onetrace")
 
 CSP = (
     "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
@@ -28,8 +28,8 @@ CSP = (
     "frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
 )
 NOT_BUILT_HTML = (
-    "<!doctype html><title>MedVault</title><body style='font-family:system-ui;padding:2rem'>"
-    "<h1>MedVault API is running</h1><p>The frontend is not built yet. Run <code>make build</code>"
+    "<!doctype html><title>OneTrace</title><body style='font-family:system-ui;padding:2rem'>"
+    "<h1>OneTrace API is running</h1><p>The frontend is not built yet. Run <code>make build</code>"
     " (or <code>make dev</code> for the Vite dev server on port 5173).</p>"
     "<p>Health: <a href='/api/health'>/api/health</a> · Docs: <a href='/api/docs'>/api/docs</a></p>"
 )
@@ -80,7 +80,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         if settings.is_prod and settings.secret_key == DEFAULT_SECRET_KEY:
-            raise RuntimeError("MEDVAULT_SECRET_KEY must be set when MEDVAULT_ENV=prod")
+            raise RuntimeError("ONETRACE_SECRET_KEY must be set when ONETRACE_ENV=prod")
         init_db(engine)
         if settings.auto_seed and seed_if_empty(engine, kms):
             log.info("Empty database: loaded the demo seed")

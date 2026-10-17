@@ -9,7 +9,7 @@ import { useAuth } from "../../lib/auth";
 import { hospitalApi } from "../../lib/data";
 import type { EmergencyInfo } from "../../lib/types";
 
-const MIN_REASON = 10; // same floor as medvault/hospital.py
+const MIN_REASON = 10; // same floor as onetrace/hospital.py
 
 export function canBreakGlass(staffRole: string | null | undefined): boolean {
   return staffRole === "physician" || staffRole === "nurse";

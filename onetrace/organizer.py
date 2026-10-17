@@ -13,9 +13,9 @@ import re
 import zlib
 from datetime import datetime
 
-from medvault.models import RecordCategory
-from medvault.schemas import GroupBy, RecordGroup, RecordSummary
-from medvault.vocab import BODY_PARTS, CONDITIONS, RECORD_TYPES
+from onetrace.models import RecordCategory
+from onetrace.schemas import GroupBy, RecordGroup, RecordSummary
+from onetrace.vocab import BODY_PARTS, CONDITIONS, RECORD_TYPES
 
 TYPE_LABEL: dict[RecordCategory, str] = {
     RecordCategory.IMAGING: "Imaging",

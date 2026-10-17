@@ -1,6 +1,6 @@
 """DATA-1 + ORG-5: synthetic tagged records and the organizer's evaluation.
 
-``python -m medvault.organizer_eval`` writes ``reports/synthetic_records.json`` (the data set,
+``python -m onetrace.organizer_eval`` writes ``reports/synthetic_records.json`` (the data set,
 deterministic) and ``reports/eval.json`` (per-field accuracy, sensitive-record recall). The
 templates live in ``vocab.NOTE_TEMPLATES``; generation adds a doctor, a date, and some noise
 (a prefix line, a trailing unrelated sentence, lower-cased text) so the score is not a tautology.
@@ -12,9 +12,9 @@ import json
 import random
 from datetime import date, timedelta
 
-from medvault.config import REPO_ROOT
-from medvault.organizer import tag_text
-from medvault.vocab import DOCTORS, NOTE_TEMPLATES
+from onetrace.config import REPO_ROOT
+from onetrace.organizer import tag_text
+from onetrace.vocab import DOCTORS, NOTE_TEMPLATES
 
 REPORTS = REPO_ROOT / "reports"
 FIELDS = ("body_part", "condition", "record_type", "doctor", "date_of_service")

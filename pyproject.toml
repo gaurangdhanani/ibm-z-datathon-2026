@@ -1,7 +1,7 @@
 [project]
-name = "medvault"
+name = "onetrace"
 version = "0.1.0"
-description = "MedVault: patient-controlled encrypted medical records vault with anomaly detection (IBM Z Datathon 2026)"
+description = "OneTrace: patient-controlled encrypted medical records vault with anomaly detection (IBM Z Datathon 2026)"
 readme = "README.md"
 requires-python = ">=3.10"
 # Loose ranges live here for documentation; the exact, tested pins are in requirements*.txt.
@@ -17,18 +17,18 @@ dependencies = [
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-src = ["medvault", "tests", "scripts"]
+src = ["onetrace", "tests", "scripts"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "W"]
 ignore = ["B008"]  # Depends(...) in defaults is the FastAPI idiom
 
 [tool.ruff.lint.per-file-ignores]
-"medvault/seed.py" = ["E501"]  # tabular demo data reads better unwrapped
-"medvault/vocab.py" = ["E501"]  # word lists and note templates read better unwrapped
+"onetrace/seed.py" = ["E501"]  # tabular demo data reads better unwrapped
+"onetrace/vocab.py" = ["E501"]  # word lists and note templates read better unwrapped
 
 [tool.ruff.lint.isort]
-known-first-party = ["medvault", "tests"]
+known-first-party = ["onetrace", "tests"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -37,4 +37,4 @@ quote-style = "double"
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-ra"
-filterwarnings = ["error::DeprecationWarning:medvault.*"]
+filterwarnings = ["error::DeprecationWarning:onetrace.*"]

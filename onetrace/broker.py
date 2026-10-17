@@ -20,9 +20,9 @@ from fastapi import HTTPException
 from sqlalchemy import desc
 from sqlmodel import Session, col, select
 
-from medvault import audit, events, rules
-from medvault.kms import Kms
-from medvault.models import (
+from onetrace import audit, events, rules
+from onetrace.kms import Kms
+from onetrace.models import (
     AccessAction,
     AccessLog,
     AccessOutcome,
@@ -38,8 +38,8 @@ from medvault.models import (
     Vault,
     utcnow,
 )
-from medvault.rules import STAFF_ROLE_LABEL
-from medvault.schemas import RecordSummary, RecordTags
+from onetrace.rules import STAFF_ROLE_LABEL
+from onetrace.schemas import RecordSummary, RecordTags
 
 LIST_LOG_WINDOW = timedelta(
     minutes=10

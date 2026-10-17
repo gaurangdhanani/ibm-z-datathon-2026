@@ -1,6 +1,6 @@
-# How to test MedVault
+# How to test OneTrace
 
-Steps for a laptop first, then LinuxONE. Every demo account's password is `medvault-demo`.
+Steps for a laptop first, then LinuxONE. Every demo account's password is `onetrace-demo`.
 
 ## 1. Set up (once)
 
@@ -48,7 +48,7 @@ Open http://localhost:5173.
 1. **Demo login (P1).** Click **Maya Chen** under Patients. You land on **My vault**: the OneTrace header with her initials (MC) and four tabs at the bottom: Vault, Keys, History, Alerts.
 2. **Role guard, client side.** Type http://localhost:5173/hospital in the address bar. You get **Not allowed**. Click **Back to my home** to return to My vault.
 3. **Sign out.** Open the **Alerts** tab, tap the **MC** avatar, then **Sign out**. You are back on the login page. Visit http://localhost:5173/patient directly: it redirects to the login page.
-4. **Staff login (H1).** The login page is the split layout from the designs: brand panel left, demo accounts and the email form right. Under **Or sign in with your email** enter `elena.vasquez@northside.example` / `medvault-demo`. You land on **My patients** (not back on the patient's Alerts page) with "Dr. Elena Vasquez · Physician · Northside General Hospital" in the account menu (top right) and no tab bar: patients, **Request patient access** and **Recent requests** share one screen.
+4. **Staff login (H1).** The login page is the split layout from the designs: brand panel left, demo accounts and the email form right. Under **Or sign in with your email** enter `elena.vasquez@northside.example` / `onetrace-demo`. You land on **My patients** (not back on the patient's Alerts page) with "Dr. Elena Vasquez · Physician · Northside General Hospital" in the account menu (top right) and no tab bar: patients, **Request patient access** and **Recent requests** share one screen.
 5. **Wrong password.** Sign out, then try the same email with password `nope`. A red banner says "Invalid email or password".
 6. **One-click staff.** Click **Jordan Price** (billing clerk, Hospital A) and **Dr. Amir Haddad** (Hospital B). Each lands on My patients with the right hospital in the account menu.
 7. **Demo control.** Click **Demo Control**. You land on **Demo control**.
@@ -65,7 +65,7 @@ Every patient and hospital screen talks to FastAPI. Start from a fresh seed (`ma
 5. **Old hospital blocked (H2, H5).** Sign in as **Dr. Elena Vasquez**. Maya is no longer in **My patients**. Open http://localhost:5173/hospital/patients/1/records/1: the calm **Your key no longer works** panel (red, cracked key, "AI risk: High", **Back to patients**) over a greyed-out workspace. Back as Maya, **History → Denied** shows "Dr. Elena Vasquez · Tried to view record list · access revoked".
 6. **New hospital in (H3).** Sign in as **Dr. Amir Haddad**. Maya is listed with status ● Active; click her name → the records page: avatar, "Patient ID · DOB (age) · Active access", the green lock banner, grouping tabs, then **Records · Record viewer · Record details**. Open **Psychiatry follow-up note** (under Other / Unknown, with the red **Sensitive** pill): it decrypts in the viewer with "Record 3 of 3", the details table fills in, and the strip says "Access checked · Logged before display". Maya's History shows "Dr. Amir Haddad · Opened Psychiatry follow-up note".
 7. **Request access (H6).** As Dr. Haddad, in **Request patient access** search "Daniel" → pick him (the card says "No active grant") → a reason of at least 10 characters → **Send request**. **Recent requests** shows it as **Pending · just now**. As **Daniel Okafor**, **Keys** shows it; **Deny**, and Riverbend's list flips to **Denied** within a few seconds.
-8. **Tamper check (S3 preview).** With the server running: `sqlite3 data/medvault.db "update access_log set summary='nothing' where id=3"`. Maya's **History** badge turns red: "History tampered at entry #3". `make seed` restores a clean chain.
+8. **Tamper check (S3 preview).** With the server running: `sqlite3 data/onetrace.db "update access_log set summary='nothing' where id=3"`. Maya's **History** badge turns red: "History tampered at entry #3". `make seed` restores a clean chain.
 
 ## 3c. Phase 3 and 3.5: rules, alerts, live updates, organizer
 
@@ -141,7 +141,7 @@ First time? Follow [LINUXONE.md](LINUXONE.md): account, virtual server, SSH key,
 4. From a phone or laptop on a network that reaches the VM, open `http://LINUXONE_HOST:8000` and repeat step 3.1 and 3.4.
 5. Paste the smoke line into `DECISIONS.md` under FND-6 and tick FND-6 in `TICKETS.md`.
 6. **Benchmark (FND-7).** On the VM `make bench` writes `reports/bench-s390x.json`; on the laptop `make bench` writes `reports/bench-arm64.json`. `scp` the VM's file into `reports/` and commit both; **Demo Control → Dashboard** shows them side by side.
-7. **HTTPS (FND-8).** Stop `make run`, then on the VM `scripts/linuxone_https.sh`. It prints `https://148-100-x-y.sslip.io`; open it on a phone, sign in as Maya, and repeat 3c steps 2 and 3 with Demo Control on the laptop. Logs: `sudo journalctl -u medvault -f` and `sudo journalctl -u caddy -f`.
+7. **HTTPS (FND-8).** Stop `make run`, then on the VM `scripts/linuxone_https.sh`. It prints `https://148-100-x-y.sslip.io`; open it on a phone, sign in as Maya, and repeat 3c steps 2 and 3 with Demo Control on the laptop. Logs: `sudo journalctl -u onetrace -f` and `sudo journalctl -u caddy -f`.
 
 If `linuxone_setup.sh` fails on `cryptography`, run `sudo apt-get install python3-cryptography` and re-run the script; it skips the pip build on s390x on purpose.
 
@@ -151,4 +151,4 @@ If `linuxone_setup.sh` fails on `cryptography`, run `sudo apt-get install python
 make seed
 ```
 
-Drops and reloads every table (hospitals, 8 users, 3 patients, 9 encrypted and tagged records, grants, one pending access request, one open alert, a valid access-log chain). Sessions are wiped too, so everyone has to sign in again; the **Reset demo** button on Demo control does the same but keeps everyone signed in. Also required after changing `MEDVAULT_SECRET_KEY`: the record keys are wrapped under a key derived from it.
+Drops and reloads every table (hospitals, 8 users, 3 patients, 9 encrypted and tagged records, grants, one pending access request, one open alert, a valid access-log chain). Sessions are wiped too, so everyone has to sign in again; the **Reset demo** button on Demo control does the same but keeps everyone signed in. Also required after changing `ONETRACE_SECRET_KEY`: the record keys are wrapped under a key derived from it.

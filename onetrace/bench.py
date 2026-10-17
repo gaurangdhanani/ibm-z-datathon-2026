@@ -1,6 +1,6 @@
 """FND-7: benchmark the vault's crypto and read paths on this machine, laptop vs LinuxONE.
 
-``python -m medvault.bench`` (or ``make bench``) writes ``reports/bench-<machine>.json`` with
+``python -m onetrace.bench`` (or ``make bench``) writes ``reports/bench-<machine>.json`` with
 AES-256-GCM throughput, per-record envelope encryption, a broker read (authorise, rules, chained
 log entry, decrypt), a full key swap (VLT-6) over a vault of 64 KiB records, and verifying a long
 audit chain. Run it on the laptop and on the LinuxONE VM (s390x); the Dashboard (S4) shows every
@@ -24,11 +24,11 @@ import cryptography
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from sqlmodel import Session, select
 
-from medvault import audit, broker
-from medvault.config import REPO_ROOT
-from medvault.db import init_db, make_engine
-from medvault.kms import Kms, new_key
-from medvault.models import (
+from onetrace import audit, broker
+from onetrace.config import REPO_ROOT
+from onetrace.db import init_db, make_engine
+from onetrace.kms import Kms, new_key
+from onetrace.models import (
     AccessAction,
     AccessOutcome,
     Hospital,
@@ -37,8 +37,8 @@ from medvault.models import (
     RecordCategory,
     User,
 )
-from medvault.patient import key_swap
-from medvault.seed import reset_and_seed
+from onetrace.patient import key_swap
+from onetrace.seed import reset_and_seed
 
 REPORTS = REPO_ROOT / "reports"
 MIB = 1024 * 1024

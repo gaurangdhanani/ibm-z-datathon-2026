@@ -8,7 +8,7 @@ from typing import Literal
 from pydantic import BaseModel
 from sqlmodel import Session
 
-from medvault.models import (
+from onetrace.models import (
     AccessOutcome,
     AlertStatus,
     Grant,

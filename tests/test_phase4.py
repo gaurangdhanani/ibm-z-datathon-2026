@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from medvault import bench
+from onetrace import bench
 from tests.conftest import demo_login
 
 

@@ -1,6 +1,6 @@
 """Application settings.
 
-Every value can be overridden with a ``MEDVAULT_*`` environment variable or a ``.env`` file at
+Every value can be overridden with a ``ONETRACE_*`` environment variable or a ``.env`` file at
 the repo root (see ``.env.example``). Defaults are safe for local development and the demo.
 """
 
@@ -19,13 +19,13 @@ DEFAULT_SECRET_KEY = "dev-only-change-me-in-prod"
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_prefix="MEDVAULT_",
+        env_prefix="ONETRACE_",
         env_file=REPO_ROOT / ".env",
         env_file_encoding="utf-8",
         extra="ignore",
     )
 
-    app_name: str = "MedVault"
+    app_name: str = "OneTrace"
     version: str = "0.1.0"
     env: Literal["dev", "test", "prod"] = "dev"
 
@@ -36,11 +36,11 @@ class Settings(BaseSettings):
     # Auth
     secret_key: str = DEFAULT_SECRET_KEY
     session_ttl_minutes: int = 720
-    session_cookie_name: str = "medvault_session"
+    session_cookie_name: str = "onetrace_session"
     secure_cookies: bool | None = None  # None -> True in prod, False otherwise
 
     # Storage. Relative SQLite paths are anchored at the repo root (see db.resolve_sqlite_url).
-    database_url: str = "sqlite:///./data/medvault.db"
+    database_url: str = "sqlite:///./data/onetrace.db"
 
     # HTTP
     cors_origins: Annotated[list[str], NoDecode] = [

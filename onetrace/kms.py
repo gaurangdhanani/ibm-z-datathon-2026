@@ -1,6 +1,6 @@
 """VLT-1: key management and envelope encryption, AES-256-GCM throughout.
 
-master key   derived from MEDVAULT_SECRET_KEY with HKDF-SHA256; lives only in memory
+master key   derived from ONETRACE_SECRET_KEY with HKDF-SHA256; lives only in memory
 vault KEK    random per vault, stored wrapped by the master key (``Vault.wrapped_kek``)
 record DEK   random per record, stored wrapped by the vault KEK (``Record.wrapped_dek``)
 
@@ -19,7 +19,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
-from medvault.models import Record, Vault
+from onetrace.models import Record, Vault
 
 KEY_BYTES = 32
 NONCE_BYTES = 12
@@ -27,7 +27,7 @@ NONCE_BYTES = 12
 
 def derive_master_key(secret_key: str) -> bytes:
     hkdf = HKDF(
-        algorithm=hashes.SHA256(), length=KEY_BYTES, salt=b"medvault-kms", info=b"master-key-v1"
+        algorithm=hashes.SHA256(), length=KEY_BYTES, salt=b"onetrace-kms", info=b"master-key-v1"
     )
     return hkdf.derive(secret_key.encode("utf-8"))
 

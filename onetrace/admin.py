@@ -13,11 +13,11 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import desc, or_
 from sqlmodel import Session, col, select
 
-from medvault import audit, broker, events, hospital, rules
-from medvault.auth import get_session, get_settings_dep, require_admin
-from medvault.config import REPO_ROOT, Settings
-from medvault.kms import Kms
-from medvault.models import (
+from onetrace import audit, broker, events, hospital, rules
+from onetrace.auth import get_session, get_settings_dep, require_admin
+from onetrace.config import REPO_ROOT, Settings
+from onetrace.kms import Kms
+from onetrace.models import (
     AccessAction,
     AccessLog,
     AccessOutcome,
@@ -29,8 +29,8 @@ from medvault.models import (
     User,
     utcnow,
 )
-from medvault.patient import get_kms
-from medvault.schemas import (
+from onetrace.patient import get_kms
+from onetrace.schemas import (
     Actor,
     AuditVerify,
     FeedEntry,
@@ -40,7 +40,7 @@ from medvault.schemas import (
     TamperChange,
     TamperState,
 )
-from medvault.seed import reset_and_seed
+from onetrace.seed import reset_and_seed
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 

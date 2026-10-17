@@ -6,10 +6,10 @@ import pytest
 from fastapi import Depends, FastAPI
 from fastapi.testclient import TestClient
 
-from medvault.auth import require_patient, require_staff, require_staff_roles
-from medvault.config import Settings
-from medvault.main import create_app
-from medvault.models import StaffRole, User
+from onetrace.auth import require_patient, require_staff, require_staff_roles
+from onetrace.config import Settings
+from onetrace.main import create_app
+from onetrace.models import StaffRole, User
 
 
 def make_settings(tmp_path, **overrides) -> Settings:

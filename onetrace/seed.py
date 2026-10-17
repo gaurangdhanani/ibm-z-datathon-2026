@@ -1,8 +1,8 @@
 """Demo seed: two hospitals, three patients with records, staff for each hospital, one admin.
 
-``python -m medvault.seed`` wipes and re-seeds the configured database (S6 demo reset builds on
+``python -m onetrace.seed`` wipes and re-seeds the configured database (S6 demo reset builds on
 this). Every demo account signs in with DEMO_PASSWORD. Records are envelope-encrypted with the
-KMS derived from MEDVAULT_SECRET_KEY (change the secret, re-run the seed), tagged by the
+KMS derived from ONETRACE_SECRET_KEY (change the secret, re-run the seed), tagged by the
 organizer, and the access log starts with a valid hash chain.
 """
 
@@ -12,11 +12,11 @@ from datetime import date, timedelta
 
 from sqlmodel import Session, select
 
-from medvault import audit, rules
-from medvault.config import get_settings
-from medvault.db import drop_db, init_db, make_engine
-from medvault.kms import Kms
-from medvault.models import (
+from onetrace import audit, rules
+from onetrace.config import get_settings
+from onetrace.db import drop_db, init_db, make_engine
+from onetrace.kms import Kms
+from onetrace.models import (
     AccessAction,
     AccessOutcome,
     AccessRequest,
@@ -35,10 +35,10 @@ from medvault.models import (
     Vault,
     utcnow,
 )
-from medvault.organizer import TYPE_LABEL, tag_text
-from medvault.security import hash_password
+from onetrace.organizer import TYPE_LABEL, tag_text
+from onetrace.security import hash_password
 
-DEMO_PASSWORD = "medvault-demo"
+DEMO_PASSWORD = "onetrace-demo"
 
 HOSPITALS = [
     ("HOSP-A", "Northside General Hospital", "Dallas"),
@@ -54,7 +54,7 @@ USERS = [
     ("nurse_a", "sam.lee@northside.example", "Sam Lee", Role.STAFF, StaffRole.NURSE, "HOSP-A"),
     ("billing_a", "jordan.price@northside.example", "Jordan Price", Role.STAFF, StaffRole.BILLING_CLERK, "HOSP-A"),
     ("doctor_b", "amir.haddad@riverbend.example", "Dr. Amir Haddad", Role.STAFF, StaffRole.PHYSICIAN, "HOSP-B"),
-    ("admin", "admin@medvault.example", "Demo Control", Role.ADMIN, None, None),
+    ("admin", "admin@onetrace.example", "Demo Control", Role.ADMIN, None, None),
 ]  # fmt: skip
 
 PERSONA_DESCRIPTIONS = {

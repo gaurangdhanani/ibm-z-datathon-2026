@@ -19,8 +19,8 @@ from zoneinfo import ZoneInfo
 
 from sqlmodel import Session, select
 
-from medvault.config import Settings, get_settings
-from medvault.models import (
+from onetrace.config import Settings, get_settings
+from onetrace.models import (
     AccessLog,
     Alert,
     AlertStatus,

@@ -7,9 +7,9 @@ from cryptography.exceptions import InvalidTag
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
-from medvault import audit
-from medvault.kms import Kms
-from medvault.models import AccessLog, Record, Vault
+from onetrace import audit
+from onetrace.kms import Kms
+from onetrace.models import AccessLog, Record, Vault
 from tests.conftest import demo_login
 
 MAYA = 1  # patient ids follow seed.PATIENTS order

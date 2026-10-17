@@ -10,7 +10,7 @@ import type { Persona, User as SessionUser } from "../lib/auth";
 import { BRAND } from "../lib/brand";
 import { Banner, Button, FullPage, Input, Spinner, cx } from "../components/ui";
 
-const DEMO_PASSWORD = "medvault-demo";
+const DEMO_PASSWORD = "onetrace-demo";
 
 function personaIcon(p: Persona): LucideIcon {
   if (p.role === "admin") return Shield;

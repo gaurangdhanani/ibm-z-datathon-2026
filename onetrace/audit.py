@@ -19,8 +19,8 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy import desc
 from sqlmodel import Session, select
 
-from medvault.auth import get_current_user, get_session
-from medvault.models import AccessAction, AccessLog, AccessOutcome, RiskLevel, User, utcnow
+from onetrace.auth import get_current_user, get_session
+from onetrace.models import AccessAction, AccessLog, AccessOutcome, RiskLevel, User, utcnow
 
 router = APIRouter(prefix="/api/audit", tags=["audit"])
 WRITE_LOCK = threading.Lock()

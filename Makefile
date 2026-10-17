@@ -1,4 +1,4 @@
-# MedVault developer entrypoints. Works with the macOS default make (3.81) and GNU make 4.
+# OneTrace developer entrypoints. Works with the macOS default make (3.81) and GNU make 4.
 PYTHON ?= python3
 VENV   ?= .venv
 BIN    := $(VENV)/bin
@@ -29,14 +29,14 @@ setup: $(BIN)/python
 	cd frontend && npm ci
 
 backend:
-	$(BIN)/uvicorn medvault.main:app --host $(HOST) --port $(PORT) --reload
+	$(BIN)/uvicorn onetrace.main:app --host $(HOST) --port $(PORT) --reload
 
 frontend:
 	cd frontend && npm run dev
 
 dev:
 	@trap 'kill 0' EXIT INT TERM; \
-	$(BIN)/uvicorn medvault.main:app --host $(HOST) --port $(PORT) --reload & \
+	$(BIN)/uvicorn onetrace.main:app --host $(HOST) --port $(PORT) --reload & \
 	(cd frontend && npm run dev) & \
 	wait
 
@@ -46,23 +46,23 @@ build:
 serve: build run
 
 run:
-	$(BIN)/uvicorn medvault.main:app --host 0.0.0.0 --port $(PORT)
+	$(BIN)/uvicorn onetrace.main:app --host 0.0.0.0 --port $(PORT)
 
 seed:
-	$(BIN)/python -m medvault.seed
+	$(BIN)/python -m onetrace.seed
 
 test:
 	$(BIN)/python -m pytest -q
 
 lint:
-	$(BIN)/ruff check medvault tests
-	$(BIN)/ruff format --check medvault tests
+	$(BIN)/ruff check onetrace tests
+	$(BIN)/ruff format --check onetrace tests
 
 eval:
-	$(BIN)/python -m medvault.organizer_eval
+	$(BIN)/python -m onetrace.organizer_eval
 
 bench:
-	$(BIN)/python -m medvault.bench
+	$(BIN)/python -m onetrace.bench
 
 smoke:
 	scripts/smoke.sh http://$(HOST):$(PORT)

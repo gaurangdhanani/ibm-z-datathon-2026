@@ -1,6 +1,6 @@
 /**
- * API contract: the shapes the FastAPI endpoints return (see medvault/schemas.py). Enum strings
- * match medvault/models.py.
+ * API contract: the shapes the FastAPI endpoints return (see onetrace/schemas.py). Enum strings
+ * match onetrace/models.py.
  */
 
 export type GrantStatus = "active" | "frozen" | "revoked" | "transferred";
@@ -245,7 +245,7 @@ export interface TamperState {
   changes: TamperChange[];
 }
 
-/** S2: reports/eval.json from `make eval` (medvault/organizer_eval.py). */
+/** S2: reports/eval.json from `make eval` (onetrace/organizer_eval.py). */
 export interface EvalReport {
   records: number;
   tagger: string;
@@ -260,7 +260,7 @@ export interface EvalReport {
   }>;
 }
 
-/** S4: reports/bench-<machine>.json from `make bench` (medvault/bench.py), one per machine. */
+/** S4: reports/bench-<machine>.json from `make bench` (onetrace/bench.py), one per machine. */
 export interface BenchResult {
   title: string;
   unit: "MB/s" | "ms";

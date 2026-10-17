@@ -1,2 +1,2 @@
-/** Product name shown in the UI (the mockup's name; the repo and API still say MedVault). */
+/** Product name shown in the UI. The repo, package and API say OneTrace too (renamed from MedVault). */
 export const BRAND = "OneTrace";

@@ -34,7 +34,7 @@ import type {
 
 const NORTHSIDE = { id: 1, code: "HOSP-A", name: "Northside General Hospital", city: "Dallas" };
 const RIVERBEND = { id: 2, code: "HOSP-B", name: "Riverbend Medical Center", city: "Fort Worth" };
-const DEMO_PASSWORD = "medvault-demo";
+const DEMO_PASSWORD = "onetrace-demo";
 
 const staff = (id: number, full_name: string, email: string, staff_role: User["staff_role"], hospital = NORTHSIDE): User => ({
   id,

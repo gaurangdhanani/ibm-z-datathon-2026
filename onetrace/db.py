@@ -13,7 +13,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.pool import StaticPool
 from sqlmodel import SQLModel, create_engine
 
-from medvault.config import REPO_ROOT
+from onetrace.config import REPO_ROOT
 
 MEMORY_URLS = {"sqlite://", "sqlite:///:memory:"}
 _SQLITE_FILE_PREFIX = "sqlite:///"
@@ -56,12 +56,12 @@ def make_engine(database_url: str, *, echo: bool = False) -> Engine:
 
 
 def init_db(engine: Engine) -> None:
-    import medvault.models  # noqa: F401  (registers every table on SQLModel.metadata)
+    import onetrace.models  # noqa: F401  (registers every table on SQLModel.metadata)
 
     SQLModel.metadata.create_all(engine)
 
 
 def drop_db(engine: Engine) -> None:
-    import medvault.models  # noqa: F401
+    import onetrace.models  # noqa: F401
 
     SQLModel.metadata.drop_all(engine)

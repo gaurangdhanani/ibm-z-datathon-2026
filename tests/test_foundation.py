@@ -7,8 +7,8 @@ from datetime import timedelta
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
-from medvault.models import AuthSession, Grant, Patient, Record, User, Vault, utcnow
-from medvault.seed import DEMO_PASSWORD, PERSONA_DESCRIPTIONS, USERS, reset_and_seed
+from onetrace.models import AuthSession, Grant, Patient, Record, User, Vault, utcnow
+from onetrace.seed import DEMO_PASSWORD, PERSONA_DESCRIPTIONS, USERS, reset_and_seed
 from tests.conftest import demo_login, make_settings
 
 # ---- FND-2: app skeleton ---------------------------------------------------------------------
@@ -38,7 +38,7 @@ def test_spa_not_built_gives_503_and_api_404_stays_json(client: TestClient) -> N
 
 
 def test_spa_serves_index_fallback_and_assets(tmp_path) -> None:
-    from medvault.main import create_app
+    from onetrace.main import create_app
 
     dist = tmp_path / "dist"
     (dist / "assets").mkdir(parents=True)
@@ -94,7 +94,7 @@ def test_personas_listed_in_demo_mode(client: TestClient) -> None:
 def test_demo_login_sets_cookie_and_me_works(client: TestClient) -> None:
     body = demo_login(client, "patient")
     assert body["user"]["role"] == "patient" and body["user"]["patient_id"] is not None
-    assert "medvault_session" in client.cookies
+    assert "onetrace_session" in client.cookies
     me = client.get("/api/auth/me")
     assert me.status_code == 200 and me.json()["email"] == "maya.chen@patient.example"
 
@@ -138,7 +138,7 @@ def test_expired_session_is_rejected(app, client: TestClient) -> None:
 
 
 def test_demo_login_disabled_outside_demo_mode(tmp_path) -> None:
-    from medvault.main import create_app
+    from onetrace.main import create_app
 
     with TestClient(create_app(make_settings(tmp_path, demo_mode=False))) as client:
         assert client.get("/api/auth/personas").json() == []

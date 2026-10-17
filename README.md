@@ -1,4 +1,4 @@
-# MedVault · IBM Z Datathon 2026
+# OneTrace · IBM Z Datathon 2026
 
 Patient-controlled, encrypted medical records: the patient holds the key, hospitals borrow it, every read is logged in a tamper-evident chain, fixed access rules freeze suspicious access within the same request, and an in-vault organizer tags records before they are encrypted. Runs on a laptop and on IBM LinuxONE (s390x).
 
@@ -11,7 +11,7 @@ make setup      # .venv + pinned Python deps, npm ci for the frontend
 make dev        # FastAPI on http://127.0.0.1:8000, Vite on http://localhost:5173
 ```
 
-Open http://localhost:5173 and pick a demo account. Every demo account's password is `medvault-demo`.
+Open http://localhost:5173 and pick a demo account. Every demo account's password is `onetrace-demo`.
 
 Single-process demo (what LinuxONE runs):
 
@@ -27,7 +27,7 @@ Testing steps are in [TEST.md](TEST.md). First time on LinuxONE? [LINUXONE.md](L
 
 | Path | What |
 | --- | --- |
-| `medvault/` | FastAPI backend: `config.py`, `db.py`, `models.py`, `auth.py`, `seed.py`, `main.py`; `kms.py` (envelope encryption), `audit.py` (hash chain), `broker.py` (the one read path), `rules.py` (fixed access rules), `events.py` (SSE streams), `patient.py`, `hospital.py` and `admin.py` (routes), `schemas.py` (API shapes); the organizer: `vocab.py` (word lists, note templates), `organizer.py` (text extraction, tagger, group-by), `organizer_eval.py` (synthetic set + evaluation); `bench.py` (laptop-vs-LinuxONE benchmark) |
+| `onetrace/` | FastAPI backend: `config.py`, `db.py`, `models.py`, `auth.py`, `seed.py`, `main.py`; `kms.py` (envelope encryption), `audit.py` (hash chain), `broker.py` (the one read path), `rules.py` (fixed access rules), `events.py` (SSE streams), `patient.py`, `hospital.py` and `admin.py` (routes), `schemas.py` (API shapes); the organizer: `vocab.py` (word lists, note templates), `organizer.py` (text extraction, tagger, group-by), `organizer_eval.py` (synthetic set + evaluation); `bench.py` (laptop-vs-LinuxONE benchmark) |
 | `tests/` | pytest suite (in-memory SQLite) |
 | `reports/` | `synthetic_records.json` (DATA-1) and `eval.json` (ORG-5) from `make eval`; `bench-<machine>.json` from `make bench` (FND-7) |
 | `scripts/` | `linuxone_setup.sh` (s390x VM setup), `linuxone_https.sh` (Caddy + Let's Encrypt + systemd, FND-8) and `smoke.sh` (health + login record) |
@@ -37,7 +37,7 @@ Testing steps are in [TEST.md](TEST.md). First time on LinuxONE? [LINUXONE.md](L
 
 ## Configuration
 
-Copy `.env.example` to `.env` to override anything. Defaults are dev-safe. Set `MEDVAULT_ENV=prod` and a real `MEDVAULT_SECRET_KEY` for the public demo.
+Copy `.env.example` to `.env` to override anything. Defaults are dev-safe. Set `ONETRACE_ENV=prod` and a real `ONETRACE_SECRET_KEY` for the public demo.
 
 ## API
 
