@@ -21,7 +21,7 @@ make serve      # builds frontend/dist, then FastAPI serves app + API on 0.0.0.0
 
 Other targets: `make test`, `make lint`, `make eval` (score the organizer into `reports/`), `make bench` (time encryption, key swap and reads into `reports/bench-<machine>.json`), `make seed` (wipe and reload demo data), `make run` (serve without building), `make smoke` (health + demo login record line), `make help`.
 
-Testing steps are in [TEST.md](TEST.md). First time on LinuxONE? [LINUXONE.md](LINUXONE.md) walks through the account, the virtual server, the SSH key, the benchmark and serving the demo over HTTPS.
+Showing it to someone? [DEMO_SCRIPT.md](DEMO_SCRIPT.md) is the step-by-step demo: device setup, the 3-minute run and extra demos. Testing steps are in [TEST.md](TEST.md). First time on LinuxONE? [LINUXONE.md](LINUXONE.md) walks through the account, the virtual server, the SSH key, the benchmark and serving the demo over HTTPS.
 
 ## Layout
 
@@ -32,6 +32,7 @@ Testing steps are in [TEST.md](TEST.md). First time on LinuxONE? [LINUXONE.md](L
 | `reports/` | `synthetic_records.json` (DATA-1) and `eval.json` (ORG-5) from `make eval`; `bench-<machine>.json` from `make bench` (FND-7) |
 | `scripts/` | `linuxone_setup.sh` (s390x VM setup), `linuxone_https.sh` (Caddy + Let's Encrypt + systemd, FND-8) and `smoke.sh` (health + login record) |
 | `frontend/` | Vite + React + Tailwind SPA; `src/components/ui.tsx` is the shared UI kit |
+| `demo/` | two sample notes to upload during the demo (DEMO_SCRIPT.md 3.3) |
 | `data/` | SQLite database (gitignored) |
 | `TICKETS.md` | the build checklist · `DECISIONS.md` the decision log |
 

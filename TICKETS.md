@@ -94,7 +94,7 @@ Phase 4 built Sat night (see DECISIONS.md "Phase 4"): Demo Control has **Live fe
 - [x] **S6** Demo reset · Eng 1 · needs FND-3 _(landed with S5: the attacker panel needs it between runs)_
 - [ ] **QA-1** Authorization matrix and separation-of-duties tests · Eng 1 · needs FND-4, VLT-8, ORG-4
 - [ ] **QA-2** Cross-surface flow tests (tests/test_flows.py) · Eng 1 + Eng 2 · needs P10, H7, S3, S5, S6, ORG-3
-- [ ] **QA-3** DEMO_SCRIPT.md: click-through checklist and device setup · Demo lead · needs QA-2
+- [x] **QA-3** DEMO_SCRIPT.md: click-through checklist and device setup · Demo lead · needs QA-2 _(flows checked against a live server; QA-2's automated flow tests are still open)_
 - [ ] **QA-4** QA pass on real phones and permission breaking · QA · needs FND-8
 - [ ] **QA-5** Fresh-clone test on laptop and LinuxONE · QA + LinuxONE owner · needs QA-6
 - [ ] **QA-6** README, DECISIONS.md and final feature report · Eng 1 + Pitch lead
