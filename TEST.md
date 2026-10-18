@@ -136,14 +136,14 @@ First time? Follow [LINUXONE.md](LINUXONE.md): account, virtual server, SSH key,
    rsync -a --exclude .venv --exclude node_modules --exclude data --exclude .git ./ USER@LINUXONE_HOST:~/ibm-z/
    ```
 
-2. On the VM, from `~/ibm-z`: `scripts/linuxone_setup.sh` (apt packages, venv, pinned deps, runs the tests). Takes a few minutes.
+2. On the VM, from `~/ibm-z`: `scripts/linuxone_setup.sh` (system packages via `apt` on Ubuntu or `dnf` on Red Hat 9, venv, pinned deps, runs the tests). Takes a few minutes.
 3. Start the server: `make run`. In a second SSH session: `make smoke`. The line must say `s390x`.
 4. From a phone or laptop on a network that reaches the VM, open `http://LINUXONE_HOST:8000` and repeat step 3.1 and 3.4.
 5. Paste the smoke line into `DECISIONS.md` under FND-6 and tick FND-6 in `TICKETS.md`.
 6. **Benchmark (FND-7).** On the VM `make bench` writes `reports/bench-s390x.json`; on the laptop `make bench` writes `reports/bench-arm64.json`. `scp` the VM's file into `reports/` and commit both; **Demo Control → Dashboard** shows them side by side.
 7. **HTTPS (FND-8).** Stop `make run`, then on the VM `scripts/linuxone_https.sh`. It prints `https://148-100-x-y.sslip.io`; open it on a phone, sign in as Maya, and repeat 3c steps 2 and 3 with Demo Control on the laptop. Logs: `sudo journalctl -u onetrace -f` and `sudo journalctl -u caddy -f`.
 
-If `linuxone_setup.sh` fails on `cryptography`, run `sudo apt-get install python3-cryptography` and re-run the script; it skips the pip build on s390x on purpose.
+If `linuxone_setup.sh` fails, read its last lines and re-run it after fixing the cause; it is safe to repeat. On s390x it always takes `cryptography` from the distro (`python3-cryptography` on Ubuntu, `python3.12-cryptography` on Red Hat) and skips the pip build on purpose. LINUXONE.md's Troubleshooting covers the common errors.
 
 ## 7. Reset the demo data
 

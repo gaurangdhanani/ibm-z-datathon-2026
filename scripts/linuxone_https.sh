@@ -3,7 +3,8 @@
 #   onetrace   uvicorn on 127.0.0.1:8000 (API + frontend/dist), restarts on failure, starts on boot
 #   caddy      reverse proxy on :80 and :443 with an automatic Let's Encrypt certificate
 #
-# Run ON THE VM, from the repo root, after scripts/linuxone_setup.sh and with frontend/dist present:
+# Run ON THE VM (Ubuntu or Red Hat Enterprise Linux 9), from the repo root, after
+# scripts/linuxone_setup.sh and with frontend/dist present:
 #   scripts/linuxone_https.sh [hostname]
 # Without a hostname it uses <public-ip-with-dashes>.sslip.io, a free DNS name that resolves to the
 # IP, so no domain is needed. Ports 80 and 443 must be reachable from the internet (Let's Encrypt
@@ -31,7 +32,7 @@ if ! grep -qs '^ONETRACE_SECRET_KEY=' .env; then
   {
     echo "ONETRACE_ENV=prod"
     echo "ONETRACE_DEMO_MODE=true"
-    echo "ONETRACE_SECRET_KEY=$(python3 -c 'import secrets; print(secrets.token_urlsafe(48))')"
+    echo "ONETRACE_SECRET_KEY=$(.venv/bin/python -c 'import secrets; print(secrets.token_urlsafe(48))')"
   } >> .env
   .venv/bin/python -m onetrace.seed
 fi
@@ -83,9 +84,19 @@ Restart=on-failure
 [Install]
 WantedBy=multi-user.target
 EOF
+# 4. Firewall: ufw on Ubuntu, firewalld on Red Hat; nothing to do when neither is running.
 if command -v ufw >/dev/null && sudo ufw status 2>/dev/null | grep -q '^Status: active'; then
   sudo ufw allow 80/tcp && sudo ufw allow 443/tcp
+elif systemctl is-active --quiet firewalld 2>/dev/null; then
+  sudo firewall-cmd -q --permanent --add-service=http --add-service=https && sudo firewall-cmd -q --reload
 fi
+
+# 5. SELinux (Red Hat enforces it): systemd may not execute files labelled as home-folder content
+#    (status=203/EXEC), so label the venv's scripts as programs. New files pip adds inherit it.
+if command -v getenforce >/dev/null && [ "$(getenforce)" = "Enforcing" ]; then
+  sudo chcon -R -t bin_t "$REPO/.venv/bin"
+fi
+
 sudo systemctl daemon-reload
 sudo systemctl enable onetrace caddy >/dev/null
 sudo systemctl restart onetrace caddy

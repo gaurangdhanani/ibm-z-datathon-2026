@@ -1,6 +1,6 @@
 # LinuxONE, first time: from zero to the demo on a phone
 
-What you end up with: an IBM LinuxONE virtual server (s390x, Ubuntu) that runs OneTrace and serves it over HTTPS at a public URL, plus `reports/bench-s390x.json` for the Dashboard. Budget 45 minutes, most of it waiting. Commands marked **laptop** run in your repo checkout on the Mac; commands marked **VM** run in the SSH session.
+What you end up with: an IBM LinuxONE virtual server (s390x, Ubuntu or Red Hat Enterprise Linux 9) that runs OneTrace and serves it over HTTPS at a public URL, plus `reports/bench-s390x.json` for the Dashboard. Budget 45 minutes, most of it waiting. Commands marked **laptop** run in your repo checkout on the Mac; commands marked **VM** run in the SSH session.
 
 Only Python runs on the VM. The frontend is built on the laptop and copied over as `frontend/dist`; FastAPI serves it.
 
@@ -14,7 +14,7 @@ Only Python runs on the VM. The frontend is built on the laptop and copied over 
 The portal is a small OpenStack dashboard; menu names below may differ slightly.
 
 1. **Service Catalog → Virtual Servers → Manage Instances → Create**.
-2. **Instance name:** `onetrace`. **Image:** the newest Ubuntu LTS offered (22.04 or 24.04; the setup script uses `apt`). **Flavor:** the default medium one (2 vCPU, 4 GB) is plenty.
+2. **Instance name:** `onetrace`. **Image:** the newest Ubuntu LTS (22.04 or 24.04) or Red Hat Enterprise Linux 9. The scripts handle both: `apt` on Ubuntu, `dnf` on Red Hat. **Flavor:** the default medium one (2 vCPU, 4 GB) is plenty.
 3. **SSH key:** choose **Create a new key pair**, name it `onetrace`, and the browser downloads `onetrace.pem`. The portal cannot show the private key again, so keep the file. (Or **Upload** your existing `~/.ssh/id_ed25519.pub` and skip the `.pem` steps.)
 4. **Create**, then wait until the status is **ACTIVE** (one to three minutes) and copy the **public IP** (usually `148.100.x.x`). Below it is written as `LINUXONE_IP`.
 
@@ -69,7 +69,12 @@ Re-run this same command after every code change.
 cd ~/ibm-z && scripts/linuxone_setup.sh
 ```
 
-Five to ten minutes: `apt` packages (including the distro `python3-cryptography`, there are no s390x wheels), a venv, the pinned Python packages, then the test suite. It ends with `Setup done`. If it fails on `cryptography`, run `sudo apt-get install -y python3-cryptography` and start it again.
+Five to ten minutes, most of it package downloads. It installs `make`, `curl`, `sqlite` and a Python with the distro's `cryptography` (there are no s390x wheels):
+
+- **Ubuntu:** `apt`, the system `python3` and `python3-cryptography`.
+- **Red Hat 9:** `dnf`, `python3.12` with `python3.12-cryptography`, falling back to 3.11. The system `python3` there is 3.9, too old for OneTrace.
+
+Then it builds the venv, installs the pinned Python packages, opens port 8000 if ufw or firewalld is running, and runs the test suite. It ends with `Setup done`. Re-running it is safe, and it rebuilds `.venv` if an earlier run used a different Python.
 
 Start the server in this session:
 
@@ -124,6 +129,8 @@ What it does, once, idempotently:
 - writes production settings to `.env` (`ONETRACE_ENV=prod`, a random `ONETRACE_SECRET_KEY`, demo personas on) and re-seeds the demo data under the new key;
 - installs Caddy (one static binary, built for s390x) and a `Caddyfile` that reverse-proxies to the app and fetches a Let's Encrypt certificate for `148-100-x-y.sslip.io` (sslip.io turns any IP into a DNS name, so no domain is needed);
 - installs two systemd services, `onetrace` (uvicorn on 127.0.0.1:8000) and `caddy` (ports 80 and 443), enabled at boot;
+- opens ports 80 and 443 in ufw (Ubuntu) or firewalld (Red Hat) when one is running;
+- on Red Hat with SELinux enforcing, labels `.venv/bin` as programs (`bin_t`) so systemd may start uvicorn from your home folder;
 - waits until `https://…/api/health` answers and prints the URL.
 
 Open that URL on a phone and sign in as Maya Chen; open it on the laptop as Demo Control; fire a scenario. If you own a domain, point an A record at the IP and run `scripts/linuxone_https.sh demo.yourdomain.com` instead.
@@ -142,9 +149,12 @@ Open that URL on a phone and sign in as Maya Chen; open it on the laptop as Demo
 ## Troubleshooting
 
 - **`Permission denied (publickey)`**: wrong user or key. The user is `linux1`; the key is the `.pem` downloaded for *this* instance, with `chmod 400`.
-- **`curl http://LINUXONE_IP:8000` times out but `ssh` works**: something blocks inbound traffic. On the VM check `sudo ufw status` (the script opens 80 and 443 if `ufw` is active). If the Community Cloud itself blocks the port, ask the organizers; a laptop-only fallback is an SSH tunnel, `ssh -i ~/.ssh/onetrace.pem -L 8000:127.0.0.1:8000 linux1@LINUXONE_IP`, then http://localhost:8000 on the laptop (phones cannot use this).
+- **`apt-get: command not found` or `make: command not found`**: the VM has an older copy of the setup script, which only knew Ubuntu. Re-run the laptop `rsync` from step 4, then `scripts/linuxone_setup.sh` again.
+- **`Could not open requirements file: /tmp/requirements.txt`**: the same old script. Re-run the `rsync` and the setup script.
+- **`curl http://LINUXONE_IP:8000` times out but `ssh` works**: something blocks inbound traffic. On the VM check `sudo ufw status` (Ubuntu) or `sudo firewall-cmd --list-all` (Red Hat); the setup script opens 8000 and the HTTPS script opens 80 and 443 when either firewall is running. If the Community Cloud itself blocks the port, ask the organizers; a laptop-only fallback is an SSH tunnel, `ssh -i ~/.ssh/onetrace.pem -L 8000:127.0.0.1:8000 linux1@LINUXONE_IP`, then http://localhost:8000 on the laptop (phones cannot use this).
 - **`linuxone_https.sh` ends with "Not reachable yet"**: `sudo journalctl -u caddy -n 50`. Usually ports 80/443 are not reachable from the internet, or Let's Encrypt rate-limited the name. Fallback: add `tls internal` as the first line inside the site block of `/etc/caddy/Caddyfile`, then `sudo systemctl restart caddy`; phones show a certificate warning once and then work.
 - **Sign-in does nothing on `http://LINUXONE_IP:8000` after step 7**: production mode sets Secure cookies, and the app now listens on localhost only. Use the `https://` URL.
+- **`systemctl status onetrace` shows `status=203/EXEC`** (Red Hat): SELinux refused to run uvicorn from the home folder. Re-run `scripts/linuxone_https.sh`, or run `sudo chcon -R -t bin_t ~/ibm-z/.venv/bin` and `sudo systemctl restart onetrace`. `sudo ausearch -m avc -ts recent` shows the denial.
 - **`make run` says the address is in use**: the `onetrace` service owns port 8000 now; use `sudo systemctl restart onetrace`.
-- **`apt` is slow**: s390x packages come from `ports.ubuntu.com`; the first `apt-get update` can take a few minutes.
+- **Package installs are slow**: s390x packages come from `ports.ubuntu.com` (Ubuntu) or Red Hat's s390x repositories; the first install can take a few minutes.
 - **Off-hours rule fires at odd times**: the rules judge time in `ONETRACE_TIMEZONE` (America/Chicago), not the VM clock, so this is expected to match Dallas.
